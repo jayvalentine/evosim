@@ -9,11 +9,17 @@
 #define SCREEN_HEIGHT 768
 
 // Width and height of simulated world, in meters.
-#define WORLD_WIDTH 1000.0
-#define WORLD_HEIGHT 1000.0
+#define WORLD_WIDTH 100000.0
+#define WORLD_HEIGHT 100000.0
 
+// Minimum and maximum size of creatures.
 #define MIN_SIZE 0.1
 #define MAX_SIZE 100.0
+
+// Camera scrolling constants.
+#define CAMERA_ZOOM_FACTOR 1.0
+#define CAMERA_MIN_SCALE 1.0
+#define CAMERA_MAX_SCALE 50.0
 
 #define NUM_CREATURES 1000
 
@@ -116,58 +122,70 @@ int main(int argc, char * argv[])
     // Get a renderer for the window.
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    SDL_RenderClear(renderer);
-
-    // Determine the width and height (in metres) of the camera.
-    double cameraWidth = SCREEN_WIDTH / cameraScale;
-    double cameraHeight = SCREEN_HEIGHT / cameraScale;
-
-    // Now we can determine the boundaries of the camera in metres, and so
-    // work out what we can display.
-    double cameraLeft = cameraX - (cameraWidth / 2);
-    double cameraRight = cameraX + (cameraWidth / 2);
-
-    double cameraTop = cameraY - (cameraHeight / 2);
-    double cameraBottom = cameraY + (cameraHeight / 2);
-
-    // Iterate over the creatures and draw a pixel for each one.
-    for (int i = 0; i < NUM_CREATURES; i++)
-    {
-        double creatureX = positions[i].first;
-        double creatureY = positions[i].second;
-
-        double creatureSize = sizes[i];
-        
-        if (creatureX < cameraLeft) continue;
-        if (creatureX > cameraRight) continue;
-        
-        if (creatureY < cameraTop) continue;
-        if (creatureY > cameraBottom) continue;
-
-        // If we get here then the creature is within the bounds of the camera,
-        // so lets calculate its pixel position.
-
-        double creatureWithinX = creatureX - cameraLeft;
-        double creatureWithinY = creatureY - cameraTop;
-
-        // Scale both to get the pixel position.
-        int creaturePixelX = (int) (creatureWithinX * cameraScale);
-        int creaturePixelY = (int) (creatureWithinY * cameraScale);
-        int creaturePixelRadius = (int) ((creatureSize / 2) * cameraScale);
-
-        // Now draw a circle!
-        DrawCircle(renderer, creaturePixelX, creaturePixelY, creaturePixelRadius);
-    }
-
-    SDL_RenderPresent(renderer);
-
     // Main loop. Loop until the user quits.
     while (!quit)
     {
         while (SDL_PollEvent(&e) != 0)
         {
             if (e.type == SDL_QUIT) quit = true;
+
+            if (e.type == SDL_MOUSEWHEEL)
+            {
+                printf("scroll\n");
+
+                if (e.wheel.y > 0) cameraScale += CAMERA_ZOOM_FACTOR;
+                else if (e.wheel.y < 0) cameraScale -= CAMERA_ZOOM_FACTOR;
+
+                if (cameraScale < CAMERA_MIN_SCALE) cameraScale = CAMERA_MIN_SCALE;
+                else if (cameraScale > CAMERA_MAX_SCALE) cameraScale = CAMERA_MAX_SCALE;
+            }
         }
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+        SDL_RenderClear(renderer);
+
+        // Determine the width and height (in metres) of the camera.
+        double cameraWidth = SCREEN_WIDTH / cameraScale;
+        double cameraHeight = SCREEN_HEIGHT / cameraScale;
+
+        // Now we can determine the boundaries of the camera in metres, and so
+        // work out what we can display.
+        double cameraLeft = cameraX - (cameraWidth / 2);
+        double cameraRight = cameraX + (cameraWidth / 2);
+
+        double cameraTop = cameraY - (cameraHeight / 2);
+        double cameraBottom = cameraY + (cameraHeight / 2);
+
+        // Iterate over the creatures and draw a pixel for each one.
+        for (int i = 0; i < NUM_CREATURES; i++)
+        {
+            double creatureX = positions[i].first;
+            double creatureY = positions[i].second;
+
+            double creatureSize = sizes[i];
+            
+            if (creatureX < cameraLeft) continue;
+            if (creatureX > cameraRight) continue;
+            
+            if (creatureY < cameraTop) continue;
+            if (creatureY > cameraBottom) continue;
+
+            // If we get here then the creature is within the bounds of the camera,
+            // so lets calculate its pixel position.
+
+            double creatureWithinX = creatureX - cameraLeft;
+            double creatureWithinY = creatureY - cameraTop;
+
+            // Scale both to get the pixel position.
+            int creaturePixelX = (int) (creatureWithinX * cameraScale);
+            int creaturePixelY = (int) (creatureWithinY * cameraScale);
+            int creaturePixelRadius = (int) ((creatureSize / 2) * cameraScale);
+
+            // Now draw a circle!
+            DrawCircle(renderer, creaturePixelX, creaturePixelY, creaturePixelRadius);
+        }
+
+        SDL_RenderPresent(renderer);
     }
 
     // Clean up the window and quit.
