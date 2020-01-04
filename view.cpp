@@ -38,6 +38,24 @@ void View::Render(void)
     double cameraTop = cameraY - (cameraHeight / 2);
     double cameraBottom = cameraY + (cameraHeight / 2);
 
+    // Draw the tiles for the world.
+    for (int x = 0; x < width; x++)
+    {
+        for (int y = 0; y < height; y++)
+        {
+            // Calculate the real-world position of this pixel.
+            double realX = (((double) x) / cameraScale) + cameraLeft;
+            double realY = (((double) y) / cameraScale) + cameraTop;
+
+            double tileValue = worldReference->GetTile(realX, realY);
+
+            unsigned int green = 50 + (int)((tileValue / 100.0) * 205);
+
+            SDL_SetRenderDrawColor(renderer, 50, green, 50, SDL_ALPHA_OPAQUE);
+            SDL_RenderDrawPoint(renderer, x, y);
+        }
+    }
+
     // Iterate over the creatures and draw a pixel for each one.
     for (int i = 0; i < worldReference->CreatureCount(); i++)
     {

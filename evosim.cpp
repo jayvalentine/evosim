@@ -18,6 +18,7 @@
 // Width and height of simulated world, in meters.
 #define WORLD_WIDTH 10000.0
 #define WORLD_HEIGHT 10000.0
+#define WORLD_TILESIZE 10.0
 
 // Minimum and maximum size of creatures.
 #define MIN_SIZE 0.1
@@ -53,7 +54,7 @@ int main(int argc, char * argv[])
     // Set up the simulation.
 
     // Initialize a world.
-    World * world = new World(WORLD_WIDTH, WORLD_HEIGHT);
+    World * world = new World(WORLD_WIDTH, WORLD_HEIGHT, WORLD_TILESIZE);
 
     // Initialize the random generator.
     Random::Init(std::chrono::system_clock::now().time_since_epoch().count());
@@ -128,6 +129,12 @@ int main(int argc, char * argv[])
                         break;
                     case SDLK_RIGHT:
                         view->PanRight();
+                        break;
+                    case SDLK_EQUALS:
+                        view->ZoomIn();
+                        break;
+                    case SDLK_MINUS:
+                        view->ZoomOut();
                         break;
                 }
             }
