@@ -13,17 +13,47 @@
 #define WORLD_HEIGHT 1000.0
 
 #define MIN_SIZE 0.1
-#define MAX_SIZE 10.0
+#define MAX_SIZE 100.0
 
 #define NUM_CREATURES 1000
 
-// Draw a pixel at the given position on a renderer.
-void DrawPixel(SDL_Renderer * renderer, int x, int y)
+void DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius)
 {
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
-    if (SDL_RenderDrawPoint(renderer, x, y) < 0)
+
+    const int diameter = (radius * 2);
+
+    int x = (radius - 1);
+    int y = 0;
+    int tx = 1;
+    int ty = 1;
+    int error = (tx - diameter);
+
+    while (x >= y)
     {
-        printf("SDL error: %s\n", SDL_GetError());
+        //  Each of the following renders an octant of the circle
+        SDL_RenderDrawPoint(renderer, centreX + x, centreY - y);
+        SDL_RenderDrawPoint(renderer, centreX + x, centreY + y);
+        SDL_RenderDrawPoint(renderer, centreX - x, centreY - y);
+        SDL_RenderDrawPoint(renderer, centreX - x, centreY + y);
+        SDL_RenderDrawPoint(renderer, centreX + y, centreY - x);
+        SDL_RenderDrawPoint(renderer, centreX + y, centreY + x);
+        SDL_RenderDrawPoint(renderer, centreX - y, centreY - x);
+        SDL_RenderDrawPoint(renderer, centreX - y, centreY + x);
+
+        if (error <= 0)
+        {
+            ++y;
+            error += ty;
+            ty += 2;
+        }
+
+        if (error > 0)
+        {
+            --x;
+            tx += 2;
+            error += (tx - diameter);
+        }
     }
 }
 
@@ -81,7 +111,7 @@ int main(int argc, char * argv[])
     // Initialize the camera scale.
     // This is the number of pixels per metre.
     // i.e., scale=1 means 1m is 1p, scale=45 means 1m is 45p.
-    double cameraScale = 1.0;
+    double cameraScale = 20.0;
 
     // Get a renderer for the window.
     SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
@@ -105,6 +135,8 @@ int main(int argc, char * argv[])
     {
         double creatureX = positions[i].first;
         double creatureY = positions[i].second;
+
+        double creatureSize = sizes[i];
         
         if (creatureX < cameraLeft) continue;
         if (creatureX > cameraRight) continue;
@@ -121,10 +153,10 @@ int main(int argc, char * argv[])
         // Scale both to get the pixel position.
         int creaturePixelX = (int) (creatureWithinX * cameraScale);
         int creaturePixelY = (int) (creatureWithinY * cameraScale);
+        int creaturePixelRadius = (int) ((creatureSize / 2) * cameraScale);
 
-        // Now draw a pixel!
-        DrawPixel(renderer, creaturePixelX, creaturePixelY);
-        
+        // Now draw a circle!
+        DrawCircle(renderer, creaturePixelX, creaturePixelY, creaturePixelRadius);
     }
 
     SDL_RenderPresent(renderer);
