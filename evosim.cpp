@@ -9,16 +9,18 @@
 #define SCREEN_HEIGHT 768
 
 // Width and height of simulated world, in meters.
-#define WORLD_WIDTH 100000.0
-#define WORLD_HEIGHT 100000.0
+#define WORLD_WIDTH 10000.0
+#define WORLD_HEIGHT 10000.0
 
 // Minimum and maximum size of creatures.
 #define MIN_SIZE 0.1
 #define MAX_SIZE 100.0
 
 // Camera scrolling constants.
-#define CAMERA_ZOOM_FACTOR 1.0
-#define CAMERA_MIN_SCALE 1.0
+#define CAMERA_ZOOM_FACTOR 2.0
+#define CAMERA_SCROLL_FACTOR CAMERA_MAX_SCALE
+
+#define CAMERA_MIN_SCALE 0.1
 #define CAMERA_MAX_SCALE 50.0
 
 #define NUM_CREATURES 1000
@@ -129,15 +131,38 @@ int main(int argc, char * argv[])
         {
             if (e.type == SDL_QUIT) quit = true;
 
-            if (e.type == SDL_MOUSEWHEEL)
+            else if (e.type == SDL_MOUSEWHEEL)
             {
-                printf("scroll\n");
-
-                if (e.wheel.y > 0) cameraScale += CAMERA_ZOOM_FACTOR;
-                else if (e.wheel.y < 0) cameraScale -= CAMERA_ZOOM_FACTOR;
+                if (e.wheel.y > 0) cameraScale = cameraScale * CAMERA_ZOOM_FACTOR;
+                else if (e.wheel.y < 0) cameraScale = cameraScale / CAMERA_ZOOM_FACTOR;
 
                 if (cameraScale < CAMERA_MIN_SCALE) cameraScale = CAMERA_MIN_SCALE;
                 else if (cameraScale > CAMERA_MAX_SCALE) cameraScale = CAMERA_MAX_SCALE;
+            }
+
+            else if (e.type == SDL_KEYDOWN)
+            {
+                switch (e.key.keysym.sym)
+                {
+                    case SDLK_DOWN:
+                        cameraY += CAMERA_SCROLL_FACTOR / cameraScale;
+                        break;
+                    case SDLK_UP:
+                        cameraY -= CAMERA_SCROLL_FACTOR / cameraScale;
+                        break;
+                    case SDLK_LEFT:
+                        cameraX -= CAMERA_SCROLL_FACTOR / cameraScale;
+                        break;
+                    case SDLK_RIGHT:
+                        cameraX += CAMERA_SCROLL_FACTOR / cameraScale;
+                        break;
+                }
+
+                if (cameraX > WORLD_WIDTH) cameraX = WORLD_WIDTH;
+                else if (cameraX < 0.0) cameraX = 0.0;
+
+                if (cameraY > WORLD_HEIGHT) cameraY = WORLD_HEIGHT;
+                else if (cameraY < 0.0) cameraY = 0.0;
             }
         }
 
