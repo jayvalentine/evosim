@@ -18,7 +18,7 @@ View::~View()
 
 void View::Render(void)
 {
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
     int width;
@@ -41,18 +41,33 @@ void View::Render(void)
     // Draw the tiles for the world.
     for (int x = 0; x < width; x++)
     {
-        for (int y = 0; y < height; y++)
+        double realX = (((double) x) / cameraScale) + cameraLeft;
+
+        int y = 0;
+        while (y < height)
         {
-            // Calculate the real-world position of this pixel.
-            double realX = (((double) x) / cameraScale) + cameraLeft;
+            // Calculate the real-world position of this pixel.    
             double realY = (((double) y) / cameraScale) + cameraTop;
+
+            // Caclulate the top boundary of the tile.
+            double tileTop = ((int) realY / worldReference->TileSize()) * worldReference->TileSize();
+
+            // We can now calculate the bottom boundary of the tile (in pixels)
+            double tileBottom = tileTop + (worldReference->TileSize());
+
+            int tileBottomPixels = (int) (tileBottom - cameraTop) * cameraScale;
+
+            if (tileBottomPixels >= height) tileBottomPixels = height - 1;
 
             double tileValue = worldReference->GetTile(realX, realY);
 
-            unsigned int green = 50 + (int)((tileValue / 100.0) * 205);
+            unsigned int green = 100 + (int)((tileValue / 100.0) * 155);
 
-            SDL_SetRenderDrawColor(renderer, 50, green, 50, SDL_ALPHA_OPAQUE);
-            SDL_RenderDrawPoint(renderer, x, y);
+            SDL_SetRenderDrawColor(renderer, 100, green, 100, SDL_ALPHA_OPAQUE);
+            SDL_RenderDrawLine(renderer, x, y, x, tileBottomPixels);
+
+            // Now move onto the next tile.
+            y = tileBottomPixels + 1;
         }
     }
 
@@ -84,7 +99,11 @@ void View::Render(void)
         int creaturePixelRadius = (int) ((creatureSize / 2) * cameraScale);
 
         // Now draw a circle!
-        DrawCircle(renderer, creaturePixelX, creaturePixelY, creaturePixelRadius, creature->Red(), creature->Green(), creature->Blue());
+        // Actually, draw several circles, so that we get a thick edge.
+        for (int i = 0; i < 5; i++)
+        {
+            DrawCircle(renderer, creaturePixelX, creaturePixelY, creaturePixelRadius - i, creature->Red(), creature->Green(), creature->Blue());
+        }
     }
 
     SDL_RenderPresent(renderer);

@@ -18,7 +18,7 @@
 // Width and height of simulated world, in meters.
 #define WORLD_WIDTH 10000.0
 #define WORLD_HEIGHT 10000.0
-#define WORLD_TILESIZE 10.0
+#define WORLD_TILESIZE 100.0
 
 // Minimum and maximum size of creatures.
 #define MIN_SIZE 0.1

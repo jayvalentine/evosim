@@ -23,6 +23,7 @@ class World
 
     double Width(void) { return width; }
     double Height(void) { return height; }
+    double TileSize(void) { return tileSize; }
 
     private:
 
