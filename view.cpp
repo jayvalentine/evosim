@@ -66,7 +66,7 @@ void View::Render(void)
         int creaturePixelRadius = (int) ((creatureSize / 2) * cameraScale);
 
         // Now draw a circle!
-        DrawCircle(renderer, creaturePixelX, creaturePixelY, creaturePixelRadius);
+        DrawCircle(renderer, creaturePixelX, creaturePixelY, creaturePixelRadius, creature->Red(), creature->Green(), creature->Blue());
     }
 
     SDL_RenderPresent(renderer);
@@ -108,9 +108,9 @@ void View::PanDown(void)
     if (cameraY > worldReference->Height()) cameraY = worldReference->Height();
 }
 
-void View::DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius)
+void View::DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue)
 {
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_SetRenderDrawColor(renderer, red, green, blue, SDL_ALPHA_OPAQUE);
 
     const int diameter = (radius * 2);
 

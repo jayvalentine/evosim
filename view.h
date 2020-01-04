@@ -37,7 +37,7 @@ class View
 
     private:
 
-    void DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius);
+    void DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue);
 
     double PanSpeed(void) { return CAMERA_SCROLL_FACTOR / cameraScale; }
 
