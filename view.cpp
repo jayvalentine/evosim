@@ -33,10 +33,16 @@ void View::Render(void)
     // Now we can determine the boundaries of the camera in metres, and so
     // work out what we can display.
     double cameraLeft = cameraX - (cameraWidth / 2);
-    double cameraRight = cameraX + (cameraWidth / 2);
+    if (cameraLeft < 0.0) cameraLeft = 0.0;
+    else if (cameraLeft > (worldReference->Width() - cameraWidth)) cameraLeft = worldReference->Width() - cameraWidth;
+
+    double cameraRight = cameraLeft + cameraWidth;
 
     double cameraTop = cameraY - (cameraHeight / 2);
-    double cameraBottom = cameraY + (cameraHeight / 2);
+    if (cameraTop < 0.0) cameraTop = 0.0;
+    else if (cameraTop > (worldReference->Height() - cameraHeight)) cameraTop = worldReference->Height() - cameraHeight;
+
+    double cameraBottom = cameraTop + cameraHeight;
 
     // Draw the tiles for the world.
     for (int x = 0; x < width; x++)
