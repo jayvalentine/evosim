@@ -16,5 +16,5 @@ void World::Step(void)
 
 void World::AddCreature(double initialX, double initialY, double initialSize)
 {
-    creatures.push_back(new Creature(initialX, initialY, initialSize));
+    creatures.push_back(new Creature(initialX, initialY, initialSize, width, height));
 }
