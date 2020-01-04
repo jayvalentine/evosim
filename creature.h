@@ -1,6 +1,10 @@
 #ifndef CREATURE_H
 #define CREATURE_H
 
+#include <math.h>
+
+#include "random.h"
+
 class Creature
 {
     public:
@@ -25,6 +29,12 @@ class Creature
 
     // Size of this creature.
     double size;
+
+    // Heading (in radians) of this creature.
+    double heading;
+
+    // Speed (in m/s) of this creature.
+    double speed;
 
     // Maximum x and y positions.
     double maxX;

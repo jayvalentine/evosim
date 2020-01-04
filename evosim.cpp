@@ -28,6 +28,9 @@
 // Frames per second of the application.
 #define FPS 60
 
+// Global random engine.
+std::default_random_engine g_generator;
+
 int main(int argc, char * argv[])
 {
     SDL_Window * window = NULL;
@@ -45,8 +48,6 @@ int main(int argc, char * argv[])
     // Now we'll draw the main window.
     window = SDL_CreateWindow("EvoSim", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
-    bool quit = false;
-
     SDL_Event e;
 
     // Set up the simulation.
@@ -54,21 +55,20 @@ int main(int argc, char * argv[])
     // Initialize a world.
     World * world = new World(WORLD_WIDTH, WORLD_HEIGHT);
 
-    std::default_random_engine generator;
+    // Initialize the random generator.
+    Random::Init(std::chrono::system_clock::now().time_since_epoch().count());
 
     // Initialize creatures.
     for (int i = 0; i < NUM_CREATURES; i++)
     {
-        std::uniform_real_distribution<double> xDistribution(0, WORLD_WIDTH);
-        std::uniform_real_distribution<double> yDistribution(0, WORLD_WIDTH);
-        std::uniform_real_distribution<double> sizeDistribution(MIN_SIZE, MAX_SIZE);
-
-        double x = xDistribution(generator);
-        double y = yDistribution(generator);
-        double size = sizeDistribution(generator);
+        double x = Random::Double(0, WORLD_WIDTH);
+        double y = Random::Double(0, WORLD_HEIGHT);
+        double size = Random::Double(MIN_SIZE, MAX_SIZE);
 
         world->AddCreature(x, y, size);
     }
+
+    printf("World initialized\n");
 
     // Initialize the camera position.
     // This is the center of the camera view in the simulated world.
@@ -82,26 +82,39 @@ int main(int argc, char * argv[])
 
     // Construct a view.
     View * view = new View(window, world, cameraX, cameraY, cameraScale);
+    
+    bool quit = false;
+
+    printf("View initialized\n");
 
     // Main loop. Loop until the user quits.
     while (!quit)
     {
+
         // Get current time (in milliseconds).
         // We'll use this to cap the framerate.
         unsigned int startTime = SDL_GetTicks();
 
         while (SDL_PollEvent(&e) != 0)
         {
-            if (e.type == SDL_QUIT) quit = true;
+            if (e.type == SDL_QUIT)
+            {
+                printf("Exiting...\n");
+                quit = true;
+            }
 
             else if (e.type == SDL_MOUSEWHEEL)
             {
+                printf("Scroll Event\n");
+
                 if (e.wheel.y > 0) view->ZoomIn();
                 else if (e.wheel.y < 0) view->ZoomOut();
             }
 
             else if (e.type == SDL_KEYDOWN)
             {
+                printf("Keydown Event\n");
+
                 switch (e.key.keysym.sym)
                 {
                     case SDLK_DOWN:
@@ -124,7 +137,7 @@ int main(int argc, char * argv[])
         world->Step();
 
         // Render the view to the user.
-       view->Render(); 
+        view->Render(); 
 
         // Get the current time (in milliseconds), and work out the time it took to perform this iteration.
         unsigned int endTime = SDL_GetTicks();
@@ -134,10 +147,13 @@ int main(int argc, char * argv[])
         // We want to make sure that we run the iteration at most 60 times per second.
         // Therefore, each iteration should take 1/60 seconds.
         // Because we're working in milliseconds, this becomes 1000/60.
-        unsigned int paddingTime = (1000 / 60) - elapsedTime;
+        if (elapsedTime < (1000 / 60))
+        {
+            unsigned int paddingTime = (1000 / 60) - elapsedTime;
 
-        // Sleep for the number of milliseconds calculated.
-        std::this_thread::sleep_for(std::chrono::milliseconds(paddingTime));
+            // Sleep for the number of milliseconds calculated.
+            std::this_thread::sleep_for(std::chrono::milliseconds(paddingTime));
+        }
     }
 
     // Delete the view.
