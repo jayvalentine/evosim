@@ -1,3 +1,6 @@
+#ifndef CREATURE_H
+#define CREATURE_H
+
 class Creature
 {
     public:
@@ -23,3 +26,5 @@ class Creature
     // Size of this creature.
     double size;
 };
+
+#endif // CREATURE_H
