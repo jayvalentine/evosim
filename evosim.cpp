@@ -4,13 +4,15 @@
 #include <utility>
 #include <random>
 
+#include <chrono>
+#include <thread>
+
+#include "world.h"
+#include "creature.h"
+
 // Width and height of main game window, in pixels.
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 768
-
-// Width and height of simulated world, in meters.
-#define WORLD_WIDTH 10000.0
-#define WORLD_HEIGHT 10000.0
 
 // Minimum and maximum size of creatures.
 #define MIN_SIZE 0.1
@@ -24,6 +26,9 @@
 #define CAMERA_MAX_SCALE 50.0
 
 #define NUM_CREATURES 1000
+
+// Frames per second of the application.
+#define FPS 60
 
 void DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius)
 {
@@ -88,11 +93,8 @@ int main(int argc, char * argv[])
 
     // Set up the simulation.
 
-    // A vector of pairs, representing the positions of creatures in the world.
-    std::vector<std::pair<double, double>> positions = std::vector<std::pair<double, double>>();
-
-    // A vector of sizes, representing sizes of creatures in the world.
-    std::vector<double> sizes = std::vector<double>();
+    // A vector of creature pointers.
+    std::vector<Creature *> creatures = std::vector<Creature *>();
 
     std::default_random_engine generator;
 
@@ -107,8 +109,7 @@ int main(int argc, char * argv[])
         double y = yDistribution(generator);
         double size = sizeDistribution(generator);
 
-        positions.push_back(std::pair<double, double>(x, y));
-        sizes.push_back(size);
+        creatures.push_back(new Creature(x, y, size));
     }
 
     // Initialize the camera position.
@@ -127,6 +128,10 @@ int main(int argc, char * argv[])
     // Main loop. Loop until the user quits.
     while (!quit)
     {
+        // Get current time (in milliseconds).
+        // We'll use this to cap the framerate.
+        unsigned int startTime = SDL_GetTicks();
+
         while (SDL_PollEvent(&e) != 0)
         {
             if (e.type == SDL_QUIT) quit = true;
@@ -184,10 +189,13 @@ int main(int argc, char * argv[])
         // Iterate over the creatures and draw a pixel for each one.
         for (int i = 0; i < NUM_CREATURES; i++)
         {
-            double creatureX = positions[i].first;
-            double creatureY = positions[i].second;
+            // Perform a step of the creature's 'life'.
+            creatures[i]->Step();
 
-            double creatureSize = sizes[i];
+            double creatureX = creatures[i]->GetXPosition();
+            double creatureY = creatures[i]->GetYPosition();
+
+            double creatureSize = creatures[i]->GetSize();
             
             if (creatureX < cameraLeft) continue;
             if (creatureX > cameraRight) continue;
@@ -211,6 +219,19 @@ int main(int argc, char * argv[])
         }
 
         SDL_RenderPresent(renderer);
+
+        // Get the current time (in milliseconds), and work out the time it took to perform this iteration.
+        unsigned int endTime = SDL_GetTicks();
+
+        unsigned int elapsedTime = endTime - startTime;
+
+        // We want to make sure that we run the iteration at most 60 times per second.
+        // Therefore, each iteration should take 1/60 seconds.
+        // Because we're working in milliseconds, this becomes 1000/60.
+        unsigned int paddingTime = (1000 / 60) - elapsedTime;
+
+        // Sleep for the number of milliseconds calculated.
+        std::this_thread::sleep_for(std::chrono::milliseconds(paddingTime));
     }
 
     // Clean up the window and quit.
