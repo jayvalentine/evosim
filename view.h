@@ -12,8 +12,8 @@
 #define CAMERA_ZOOM_FACTOR 2.0
 #define CAMERA_SCROLL_FACTOR CAMERA_MAX_SCALE
 
-#define CAMERA_MIN_SCALE 0.1
-#define CAMERA_MAX_SCALE 50.0
+#define CAMERA_MIN_SCALE 0.2
+#define CAMERA_MAX_SCALE 2.0
 
 class View
 {
@@ -35,6 +35,8 @@ class View
     void PanUp(void);
     void PanDown(void);
 
+    void HandleClick(int x, int y);
+
     private:
 
     void DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue);
@@ -50,6 +52,9 @@ class View
     double cameraX;
     double cameraY;
     double cameraScale;
+
+    // Creature we're focusing on.
+    Creature * focusCreature;
 };
 
 #endif // VIEW_H

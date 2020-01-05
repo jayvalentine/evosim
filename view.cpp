@@ -9,6 +9,8 @@ View::View(SDL_Window * window, World * world, double initialX, double initialY,
     cameraX = initialX;
     cameraY = initialY;
     cameraScale = initialScale;
+
+    focusCreature = NULL;
 }
 
 View::~View()
@@ -18,6 +20,13 @@ View::~View()
 
 void View::Render(void)
 {
+    // If we're focusing on a creature, set the camera position.
+    if (focusCreature != NULL)
+    {
+        cameraX = focusCreature->GetXPosition();
+        cameraY = focusCreature->GetYPosition();
+    }
+
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
@@ -51,7 +60,7 @@ void View::Render(void)
         double realX = (((double) viewX) / cameraScale) + cameraLeft;
 
         // Calculate the left boundary of the tile.
-        double tileLeft = ((int) realX / worldReference->TileSize()) * worldReference->TileSize();
+        double tileLeft = ((int) (realX / worldReference->TileSize())) * worldReference->TileSize();
 
         // Calculate right boundary of tile in pixels
         double tileRight = tileLeft + worldReference->TileSize();
@@ -60,6 +69,12 @@ void View::Render(void)
 
         if (tileRightPixels >= width) tileRightPixels = width - 1;
 
+        if (tileRightPixels < viewX)
+        {
+            viewX++;
+            continue;
+        }
+
         int viewY = 0;
         while (viewY < height)
         {
@@ -67,7 +82,7 @@ void View::Render(void)
             double realY = (((double) viewY) / cameraScale) + cameraTop;
 
             // Caclulate the top boundary of the tile.
-            double tileTop = ((int) realY / worldReference->TileSize()) * worldReference->TileSize();
+            double tileTop = ((int) (realY / worldReference->TileSize())) * worldReference->TileSize();
 
             // We can now calculate the bottom boundary of the tile (in pixels)
             double tileBottom = tileTop + worldReference->TileSize();
@@ -77,6 +92,12 @@ void View::Render(void)
             if (tileBottomPixels >= height) tileBottomPixels = height - 1;
 
             double tileValue = worldReference->GetTile(realX, realY);
+
+            if (tileBottomPixels < viewY) 
+            {
+                viewY++;
+                continue;
+            }
 
             unsigned int green = 100 + (int)((tileValue / 100.0) * 155);
 
@@ -95,6 +116,7 @@ void View::Render(void)
             SDL_RenderDrawRect(renderer, &tile);
 
             // Now move onto the next tile.
+            
             viewY = tileBottomPixels + 1;
         }
 
@@ -144,12 +166,14 @@ void View::ZoomIn(void)
 {
     cameraScale = cameraScale * CAMERA_ZOOM_FACTOR;
     if (cameraScale > CAMERA_MAX_SCALE) cameraScale = CAMERA_MAX_SCALE;
+    printf("Scale: %f\n", cameraScale);
 }
 
 void View::ZoomOut(void)
 {
     cameraScale = cameraScale / CAMERA_ZOOM_FACTOR;
     if (cameraScale < CAMERA_MIN_SCALE) cameraScale = CAMERA_MIN_SCALE;
+    printf("Scale: %f\n", cameraScale);
 }
 
 void View::PanLeft(void)
@@ -174,6 +198,57 @@ void View::PanDown(void)
 {
     cameraY += PanSpeed();
     if (cameraY > worldReference->Height()) cameraY = worldReference->Height();
+}
+
+void View::HandleClick(int x, int y)
+{
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(renderer);
+
+    int width;
+    int height;
+
+    SDL_GetRendererOutputSize(renderer, &width, &height);
+
+    // Determine the width and height (in metres) of the camera.
+    double cameraWidth = width / cameraScale;
+    double cameraHeight = height / cameraScale;
+
+    // Now we can determine the boundaries of the camera in metres, and so
+    // work out what we can display.
+    double cameraLeft = cameraX - (cameraWidth / 2);
+    if (cameraLeft < 0.0) cameraLeft = 0.0;
+    else if (cameraLeft > (worldReference->Width() - cameraWidth)) cameraLeft = worldReference->Width() - cameraWidth;
+
+    double cameraTop = cameraY - (cameraHeight / 2);
+    if (cameraTop < 0.0) cameraTop = 0.0;
+    else if (cameraTop > (worldReference->Height() - cameraHeight)) cameraTop = worldReference->Height() - cameraHeight;
+
+    // First, calculate the real-world position of the click.
+    double realX = cameraLeft + (x / cameraScale);
+    double realY = cameraTop + (y / cameraScale);
+
+    // Is this position a creature?
+    for (int i = 0; i < worldReference->CreatureCount(); i++)
+    {
+        Creature * creature = worldReference->GetCreature(i);
+
+        // Calculate distance from this creature to the clicked point.
+        double xDist = fabs(realX - creature->GetXPosition());
+        double yDist = fabs(realY - creature->GetYPosition());
+
+        // A bit of year 7 maths...
+        double distance = sqrt((xDist * xDist) + (yDist * yDist));
+
+        // A creature's size is its diameter in metres, so we want to see if
+        // distance is within the radius.
+        if (distance < (creature->GetSize() / 2))
+        {
+            // We are now following this creature.
+            focusCreature = creature;
+            break;
+        }
+    }
 }
 
 void View::DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue)

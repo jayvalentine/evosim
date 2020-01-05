@@ -16,8 +16,6 @@ Creature::Creature(double initialX, double initialY, double initialSize, double 
     red = Random::UInt(0, 255);
     green = Random::UInt(0, 255);
     blue = Random::UInt(0, 255);
-
-    printf("r: %u, g: %u, b: %u\n", red, green, blue);
 }
 
 void Creature::Step(void)

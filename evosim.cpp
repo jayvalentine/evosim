@@ -79,7 +79,7 @@ int main(int argc, char * argv[])
     // Initialize the camera scale.
     // This is the number of pixels per metre.
     // i.e., scale=1 means 1m is 1p, scale=45 means 1m is 45p.
-    const double cameraScale = 20.0;
+    const double cameraScale = 1.0;
 
     // Construct a view.
     View * view = new View(window, world, cameraX, cameraY, cameraScale);
@@ -136,6 +136,14 @@ int main(int argc, char * argv[])
                     case SDLK_MINUS:
                         view->ZoomOut();
                         break;
+                }
+            }
+
+            else if (e.type == SDL_MOUSEBUTTONDOWN)
+            {
+                if (e.button.button == SDL_BUTTON_LEFT)
+                {
+                    view->HandleClick(e.button.x, e.button.y);
                 }
             }
         }
