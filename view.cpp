@@ -30,12 +30,30 @@ void View::RenderNet(NeuralNetwork * net)
     SDL_SetRenderDrawColor(netRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(netRenderer);
 
+    // First draw the synapses. That way the neurons will be drawn over them.
+    std::vector<Synapse> synapses = net->Synapses();
+
+    for (int i = 0; i < synapses.size(); i++)
+    {
+        // From an input to an output.
+        Synapse s = synapses[i];
+
+        int startX = 40;
+        int endX = 360;
+
+        int startY = 40 + (70 * s.Start());
+        int endY = 40 + (70 * (s.End() - inputs.size()));
+
+        SDL_SetRenderDrawColor(netRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+        SDL_RenderDrawLine(netRenderer, startX, startY, endX, endY);
+    }
+
     for (int i = 0; i < inputs.size(); i++)
     {
         int x = 40;
         int y = 40 + (70 * inputs[i]);
 
-        printf("Drawing %d, %d\n", x, y);
+        printf("Drawing Input: %d, %d\n", x, y);
 
         DrawCircle(netRenderer, x, y, 30, 255, 255, 255);
 
@@ -71,6 +89,49 @@ void View::RenderNet(NeuralNetwork * net)
         FillCircle(netRenderer, x, y, 29, red, green, blue);
     }
 
+    // Now draw the output neurons.
+    std::vector<int> outputs = net->Outputs();
+
+    for (int i = 0; i < outputs.size(); i++)
+    {
+        int x = 360;
+        int y = 40 + (70 * (outputs[i] - inputs.size()));
+
+        printf("Drawing Output: %d, %d\n", x, y);
+
+        DrawCircle(netRenderer, x, y, 30, 255, 255, 255);
+
+        // Determine the colour of the neuron.
+        // Red if the neuron is negative,
+        // White if the neuron is 0,
+        // Green if the neuron is positive.
+
+        unsigned int red = 255;
+        unsigned int green = 255;
+        unsigned int blue = 255;
+
+        double value = net->NeuronValue(outputs[i]);
+
+        // We expect value to be betwen -1 and 1, but lets bound it to be sure.
+        if (value < -1.0) value = -1.0;
+        else if (value > 1.0) value = 1.0;
+
+        if (value < 0.0)
+        {
+            unsigned int subtract = (unsigned int) (-value * 255);
+            green -= subtract;
+            blue -= subtract;
+        }
+        else if (value > 0.0)
+        {
+            unsigned int subtract = (unsigned int) (value * 255);
+            red -= subtract;
+            blue -= subtract;
+        }
+
+        // Now fill the circle we just drew with the calculated color.
+        FillCircle(netRenderer, x, y, 29, red, green, blue);
+    }
 
     SDL_RenderPresent(netRenderer);
 }

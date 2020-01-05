@@ -107,3 +107,8 @@ std::vector<int> NeuralNetwork::Outputs(void)
 
     return outputs;
 }
+
+std::vector<Synapse> NeuralNetwork::Synapses(void)
+{
+    return synapses;
+}

@@ -47,6 +47,7 @@ class NeuralNetwork
 
     std::vector<int> Inputs(void);
     std::vector<int> Outputs(void);
+    std::vector<Synapse> Synapses(void);
 
     private:
 
