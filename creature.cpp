@@ -20,13 +20,22 @@ Creature::Creature(World * w, double initialX, double initialY, double initialSi
 
 void Creature::Step(void)
 {
-    std::vector<double> inputs = {heading, speed, world->GetTile(x, y)};
+    std::vector<double> inputs = std::vector<double>();
 
-    std::vector<double> outputs = net->Outputs(inputs);
+    // Heading is in radians, between 0 and 2. Normalisation is easy, just subtract one.
+    inputs.push_back(heading - 1.0);
+
+    // Speed is a direct output of the network, so is already normalised by sigmoid function.
+    inputs.push_back(speed);
+
+    // Tile value is between 0 and 100. Divide by 50 and subtract 1.
+    inputs.push_back((world->GetTile(x, y) / 50) - 1);
+
+    std::vector<double> outputs = net->OutputValues(inputs);
 
     // Change speed and heading according to network.
     speed = outputs[0];
-    heading = outputs[1];
+    heading = outputs[1] + 1.0;
 
     if (heading < 0.0) heading = 2.0 + heading;
     else if (heading > 2.0) heading -= 2.0;

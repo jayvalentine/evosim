@@ -27,7 +27,7 @@ NeuralNetwork::NeuralNetwork(int inputs, int outputs)
     }
 }
 
-std::vector<double> NeuralNetwork::Outputs(std::vector<double> inputs)
+std::vector<double> NeuralNetwork::OutputValues(std::vector<double> inputs)
 {
     for (int i = 0; i < inputs.size(); i++)
     {
@@ -82,4 +82,28 @@ double NeuralNetwork::NeuronValue(int neuron)
     // The value of the neuron is the weighted sum passed through a sigmoid function.
     // Here we use a fast approximation.
     return weightedSum / (1 + fabs(weightedSum));
+}
+
+std::vector<int> NeuralNetwork::Inputs(void)
+{
+    std::vector<int> inputs = std::vector<int>();
+
+    for (int i = 0; i < neuronTypes.size(); i++)
+    {
+        if (neuronTypes[i] == INPUT) inputs.push_back(i);
+    }
+
+    return inputs;
+}
+
+std::vector<int> NeuralNetwork::Outputs(void)
+{
+    std::vector<int> outputs = std::vector<int>();
+
+    for (int i = 0; i < neuronTypes.size(); i++)
+    {
+        if (neuronTypes[i] == OUTPUT) outputs.push_back(i);
+    }
+
+    return outputs;
 }

@@ -35,8 +35,7 @@ std::default_random_engine g_generator;
 int main(int argc, char * argv[])
 {
     SDL_Window * window = NULL;
-
-    SDL_Surface * screenSurface = NULL;
+    SDL_Window * netWindow = NULL;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
@@ -48,6 +47,10 @@ int main(int argc, char * argv[])
 
     // Now we'll draw the main window.
     window = SDL_CreateWindow("EvoSim", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+
+    // This is a window to show the neural network of the selected creature.
+    // It's hidden initially.
+    netWindow = SDL_CreateWindow("Selected Creature", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 400, 700, SDL_WINDOW_HIDDEN);
 
     SDL_Event e;
 
@@ -84,7 +87,7 @@ int main(int argc, char * argv[])
     const double cameraScale = 1.0;
 
     // Construct a view.
-    View * view = new View(window, sim, cameraX, cameraY, cameraScale);
+    View * view = new View(window, netWindow, sim, cameraX, cameraY, cameraScale);
     
     bool quit = false;
 

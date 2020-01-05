@@ -1,8 +1,12 @@
 #include "view.h"
 
-View::View(SDL_Window * window, Simulation * sim, double initialX, double initialY, double initialScale)
+View::View(SDL_Window * window, SDL_Window * netWindow, Simulation * sim, double initialX, double initialY, double initialScale)
 {
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+    netWindowReference = netWindow;
+
+    netRenderer = SDL_CreateRenderer(netWindow, -1, SDL_RENDERER_ACCELERATED);
 
     simReference = sim;
 
@@ -18,6 +22,59 @@ View::~View()
     SDL_DestroyRenderer(renderer);
 }
 
+void View::RenderNet(NeuralNetwork * net)
+{
+    // Render the input neurons.
+    std::vector<int> inputs = net->Inputs();
+
+    SDL_SetRenderDrawColor(netRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(netRenderer);
+
+    for (int i = 0; i < inputs.size(); i++)
+    {
+        int x = 40;
+        int y = 40 + (70 * inputs[i]);
+
+        printf("Drawing %d, %d\n", x, y);
+
+        DrawCircle(netRenderer, x, y, 30, 255, 255, 255);
+
+        // Determine the colour of the neuron.
+        // Red if the neuron is negative,
+        // White if the neuron is 0,
+        // Green if the neuron is positive.
+
+        unsigned int red = 255;
+        unsigned int green = 255;
+        unsigned int blue = 255;
+
+        double value = net->NeuronValue(inputs[i]);
+
+        // We expect value to be betwen -1 and 1, but lets bound it to be sure.
+        if (value < -1.0) value = -1.0;
+        else if (value > 1.0) value = 1.0;
+
+        if (value < 0.0)
+        {
+            unsigned int subtract = (unsigned int) (-value * 255);
+            green -= subtract;
+            blue -= subtract;
+        }
+        else if (value > 0.0)
+        {
+            unsigned int subtract = (unsigned int) (value * 255);
+            red -= subtract;
+            blue -= subtract;
+        }
+
+        // Now fill the circle we just drew with the calculated color.
+        FillCircle(netRenderer, x, y, 29, red, green, blue);
+    }
+
+
+    SDL_RenderPresent(netRenderer);
+}
+
 void View::Render(void)
 {
     // If we're focusing on a creature, set the camera position.
@@ -25,6 +82,12 @@ void View::Render(void)
     {
         cameraX = focusCreature->GetXPosition();
         cameraY = focusCreature->GetYPosition();
+
+        // Show the information window.
+        SDL_ShowWindow(netWindowReference);
+
+        // Render the creature's neural net to the information window.
+        RenderNet(focusCreature->Net());
     }
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);

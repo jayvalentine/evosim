@@ -39,13 +39,16 @@ class NeuralNetwork
 
     NeuralNetwork(int inputs, int outputs);
 
-    std::vector<double> Outputs(std::vector<double> inputs);
+    std::vector<double> OutputValues(std::vector<double> inputs);
 
     void AddSynapse(int input, int output, double weight);
 
-    private:
-
     double NeuronValue(int neuronIndex);
+
+    std::vector<int> Inputs(void);
+    std::vector<int> Outputs(void);
+
+    private:
 
     std::vector<Synapse> synapses;
     std::vector<double> inputValues;

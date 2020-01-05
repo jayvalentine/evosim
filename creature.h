@@ -28,6 +28,8 @@ class Creature
     unsigned int Green(void) { return green; }
     unsigned int Blue(void) { return blue; }
 
+    NeuralNetwork * Net(void) { return net; }
+
     private:
 
     // X and Y position in the world of this creature.

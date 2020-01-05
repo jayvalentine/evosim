@@ -20,7 +20,7 @@ class View
     public:
 
     // Constructor.
-    View(SDL_Window * window, Simulation * sim, double initialX, double initialY, double initialScale);
+    View(SDL_Window * window, SDL_Window * netWindow, Simulation * sim, double initialX, double initialY, double initialScale);
 
     // Destructor.
     ~View();
@@ -41,12 +41,17 @@ class View
 
     private:
 
+    void RenderNet(NeuralNetwork * net);
+
     void DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue);
     void FillCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue);
 
     double PanSpeed(void) { return CAMERA_SCROLL_FACTOR / cameraScale; }
 
     SDL_Renderer * renderer;
+    SDL_Renderer * netRenderer;
+
+    SDL_Window * netWindowReference;
 
     // Simulation object.
     Simulation * simReference;
