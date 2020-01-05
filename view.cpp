@@ -45,21 +45,32 @@ void View::Render(void)
     double cameraBottom = cameraTop + cameraHeight;
 
     // Draw the tiles for the world.
-    for (int x = 0; x < width; x++)
+    int viewX = 0;
+    while (viewX < width)
     {
-        double realX = (((double) x) / cameraScale) + cameraLeft;
+        double realX = (((double) viewX) / cameraScale) + cameraLeft;
 
-        int y = 0;
-        while (y < height)
+        // Calculate the left boundary of the tile.
+        double tileLeft = ((int) realX / worldReference->TileSize()) * worldReference->TileSize();
+
+        // Calculate right boundary of tile in pixels
+        double tileRight = tileLeft + worldReference->TileSize();
+
+        int tileRightPixels = (int) (tileRight - cameraLeft) * cameraScale;
+
+        if (tileRightPixels >= width) tileRightPixels = width - 1;
+
+        int viewY = 0;
+        while (viewY < height)
         {
             // Calculate the real-world position of this pixel.    
-            double realY = (((double) y) / cameraScale) + cameraTop;
+            double realY = (((double) viewY) / cameraScale) + cameraTop;
 
             // Caclulate the top boundary of the tile.
             double tileTop = ((int) realY / worldReference->TileSize()) * worldReference->TileSize();
 
             // We can now calculate the bottom boundary of the tile (in pixels)
-            double tileBottom = tileTop + (worldReference->TileSize());
+            double tileBottom = tileTop + worldReference->TileSize();
 
             int tileBottomPixels = (int) (tileBottom - cameraTop) * cameraScale;
 
@@ -69,12 +80,26 @@ void View::Render(void)
 
             unsigned int green = 100 + (int)((tileValue / 100.0) * 155);
 
+            // Create a rectangle for this tile.
+            SDL_Rect tile;
+
+            tile.x = viewX;
+            tile.y = viewY;
+            tile.w = (tileRightPixels - viewX);
+            tile.h = (tileBottomPixels - viewY);
+
             SDL_SetRenderDrawColor(renderer, 100, green, 100, SDL_ALPHA_OPAQUE);
-            SDL_RenderDrawLine(renderer, x, y, x, tileBottomPixels);
+            SDL_RenderFillRect(renderer, &tile);
+
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+            SDL_RenderDrawRect(renderer, &tile);
 
             // Now move onto the next tile.
-            y = tileBottomPixels + 1;
+            viewY = tileBottomPixels + 1;
         }
+
+        // Now move onto the next column.
+        viewX = tileRightPixels + 1;
     }
 
     // Iterate over the creatures and draw a pixel for each one.
