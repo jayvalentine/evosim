@@ -45,5 +45,10 @@ double World::GetTile(double x, double y)
     int xIndex = (int) (x / tileSize);
     int yIndex = (int) (y / tileSize);
 
+    xIndex = xIndex % tiles.size();
+    yIndex = yIndex % tiles[xIndex].size();
+
+    printf("x: %d, y: %d\n", xIndex, yIndex);
+
     return tiles[xIndex][yIndex];
 }
