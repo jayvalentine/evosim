@@ -22,7 +22,7 @@ NeuralNetwork::NeuralNetwork(int inputs, int outputs)
     {
         for (int o = inputs; o < inputs + outputs; o++)
         {
-            AddSynapse(i, o, 0.0);
+            AddSynapse(i, o, Random::Double(-1.0, 1.0));
         }
     }
 }

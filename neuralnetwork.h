@@ -3,6 +3,8 @@
 
 #include <math.h>
 
+#include "random.h"
+
 class Synapse
 {
     public:
