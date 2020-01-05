@@ -1,10 +1,10 @@
 #include "view.h"
 
-View::View(SDL_Window * window, World * world, double initialX, double initialY, double initialScale)
+View::View(SDL_Window * window, Simulation * sim, double initialX, double initialY, double initialScale)
 {
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    worldReference = world;
+    simReference = sim;
 
     cameraX = initialX;
     cameraY = initialY;
@@ -43,13 +43,13 @@ void View::Render(void)
     // work out what we can display.
     double cameraLeft = cameraX - (cameraWidth / 2);
     if (cameraLeft < 0.0) cameraLeft = 0.0;
-    else if (cameraLeft > (worldReference->Width() - cameraWidth)) cameraLeft = worldReference->Width() - cameraWidth;
+    else if (cameraLeft > (simReference->GetWorld()->Width() - cameraWidth)) cameraLeft = simReference->GetWorld()->Width() - cameraWidth;
 
     double cameraRight = cameraLeft + cameraWidth;
 
     double cameraTop = cameraY - (cameraHeight / 2);
     if (cameraTop < 0.0) cameraTop = 0.0;
-    else if (cameraTop > (worldReference->Height() - cameraHeight)) cameraTop = worldReference->Height() - cameraHeight;
+    else if (cameraTop > (simReference->GetWorld()->Height() - cameraHeight)) cameraTop = simReference->GetWorld()->Height() - cameraHeight;
 
     double cameraBottom = cameraTop + cameraHeight;
 
@@ -60,10 +60,10 @@ void View::Render(void)
         double realX = (((double) viewX) / cameraScale) + cameraLeft;
 
         // Calculate the left boundary of the tile.
-        double tileLeft = ((int) (realX / worldReference->TileSize())) * worldReference->TileSize();
+        double tileLeft = ((int) (realX / simReference->GetWorld()->TileSize())) * simReference->GetWorld()->TileSize();
 
         // Calculate right boundary of tile in pixels
-        double tileRight = tileLeft + worldReference->TileSize();
+        double tileRight = tileLeft + simReference->GetWorld()->TileSize();
 
         int tileRightPixels = (int) (tileRight - cameraLeft) * cameraScale;
 
@@ -82,16 +82,16 @@ void View::Render(void)
             double realY = (((double) viewY) / cameraScale) + cameraTop;
 
             // Caclulate the top boundary of the tile.
-            double tileTop = ((int) (realY / worldReference->TileSize())) * worldReference->TileSize();
+            double tileTop = ((int) (realY / simReference->GetWorld()->TileSize())) * simReference->GetWorld()->TileSize();
 
             // We can now calculate the bottom boundary of the tile (in pixels)
-            double tileBottom = tileTop + worldReference->TileSize();
+            double tileBottom = tileTop + simReference->GetWorld()->TileSize();
 
             int tileBottomPixels = (int) (tileBottom - cameraTop) * cameraScale;
 
             if (tileBottomPixels >= height) tileBottomPixels = height - 1;
 
-            double tileValue = worldReference->GetTile(realX, realY);
+            double tileValue = simReference->GetWorld()->GetTile(realX, realY);
 
             if (tileBottomPixels < viewY) 
             {
@@ -125,9 +125,9 @@ void View::Render(void)
     }
 
     // Iterate over the creatures and draw each one.
-    for (int i = 0; i < worldReference->CreatureCount(); i++)
+    for (int i = 0; i < simReference->CreatureCount(); i++)
     {
-        Creature * creature = worldReference->GetCreature(i);
+        Creature * creature = simReference->GetCreature(i);
 
         double creatureX = creature->GetXPosition();
         double creatureY = creature->GetYPosition();
@@ -167,7 +167,7 @@ void View::PanLeft(void)
 void View::PanRight(void)
 {
     cameraX += PanSpeed();
-    if (cameraX > worldReference->Width()) cameraX = worldReference->Width();
+    if (cameraX > simReference->GetWorld()->Width()) cameraX = simReference->GetWorld()->Width();
 }
 
 void View::PanUp(void)
@@ -179,7 +179,7 @@ void View::PanUp(void)
 void View::PanDown(void)
 {
     cameraY += PanSpeed();
-    if (cameraY > worldReference->Height()) cameraY = worldReference->Height();
+    if (cameraY > simReference->GetWorld()->Height()) cameraY = simReference->GetWorld()->Height();
 }
 
 void View::HandleClick(int x, int y)
@@ -200,20 +200,20 @@ void View::HandleClick(int x, int y)
     // work out what we can display.
     double cameraLeft = cameraX - (cameraWidth / 2);
     if (cameraLeft < 0.0) cameraLeft = 0.0;
-    else if (cameraLeft > (worldReference->Width() - cameraWidth)) cameraLeft = worldReference->Width() - cameraWidth;
+    else if (cameraLeft > (simReference->GetWorld()->Width() - cameraWidth)) cameraLeft = simReference->GetWorld()->Width() - cameraWidth;
 
     double cameraTop = cameraY - (cameraHeight / 2);
     if (cameraTop < 0.0) cameraTop = 0.0;
-    else if (cameraTop > (worldReference->Height() - cameraHeight)) cameraTop = worldReference->Height() - cameraHeight;
+    else if (cameraTop > (simReference->GetWorld()->Height() - cameraHeight)) cameraTop = simReference->GetWorld()->Height() - cameraHeight;
 
     // First, calculate the real-world position of the click.
     double realX = cameraLeft + (x / cameraScale);
     double realY = cameraTop + (y / cameraScale);
 
     // Is this position a creature?
-    for (int i = 0; i < worldReference->CreatureCount(); i++)
+    for (int i = 0; i < simReference->CreatureCount(); i++)
     {
-        Creature * creature = worldReference->GetCreature(i);
+        Creature * creature = simReference->GetCreature(i);
 
         // Calculate distance from this creature to the clicked point.
         double xDist = fabs(realX - creature->GetXPosition());

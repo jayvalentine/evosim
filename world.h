@@ -3,7 +3,6 @@
 
 #include <vector>
 
-#include "creature.h"
 #include "random.h"
 
 class World
@@ -13,11 +12,6 @@ class World
     World(double w, double h, double tileSize);
 
     void Step(void);
-
-    void AddCreature(double initialX, double initialY, double initialSize);
-
-    Creature * GetCreature(int index) { return creatures[index]; };
-    size_t CreatureCount(void) { return creatures.size(); };
 
     double GetTile(double x, double y);
 
@@ -31,8 +25,6 @@ class World
     double height;
 
     double tileSize;
-
-    std::vector<Creature *> creatures;
 
     std::vector<std::vector<double>> tiles;
 };

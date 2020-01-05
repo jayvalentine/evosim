@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include "world.h"
+#include "simulation.h"
 #include "creature.h"
 
 // Camera scrolling constants.
@@ -20,7 +20,7 @@ class View
     public:
 
     // Constructor.
-    View(SDL_Window * window, World * world, double initialX, double initialY, double initialScale);
+    View(SDL_Window * window, Simulation * sim, double initialX, double initialY, double initialScale);
 
     // Destructor.
     ~View();
@@ -48,8 +48,8 @@ class View
 
     SDL_Renderer * renderer;
 
-    // World object.
-    World * worldReference;
+    // Simulation object.
+    Simulation * simReference;
 
     // Camera position and scale.
     double cameraX;

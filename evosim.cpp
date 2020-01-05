@@ -56,6 +56,8 @@ int main(int argc, char * argv[])
     // Initialize a world.
     World * world = new World(WORLD_WIDTH, WORLD_HEIGHT, WORLD_TILESIZE);
 
+    Simulation * sim = new Simulation(world);
+
     // Initialize the random generator.
     Random::Init(std::chrono::system_clock::now().time_since_epoch().count());
 
@@ -66,7 +68,7 @@ int main(int argc, char * argv[])
         double y = Random::Double(0, WORLD_HEIGHT);
         double size = Random::Double(MIN_SIZE, MAX_SIZE);
 
-        world->AddCreature(x, y, size);
+        sim->AddCreature(x, y, size);
     }
 
     printf("World initialized\n");
@@ -82,7 +84,7 @@ int main(int argc, char * argv[])
     const double cameraScale = 1.0;
 
     // Construct a view.
-    View * view = new View(window, world, cameraX, cameraY, cameraScale);
+    View * view = new View(window, sim, cameraX, cameraY, cameraScale);
     
     bool quit = false;
 
@@ -91,7 +93,6 @@ int main(int argc, char * argv[])
     // Main loop. Loop until the user quits.
     while (!quit)
     {
-
         // Get current time (in milliseconds).
         // We'll use this to cap the framerate.
         unsigned int startTime = SDL_GetTicks();
@@ -148,8 +149,8 @@ int main(int argc, char * argv[])
             }
         }
 
-        // Perform a step of the world.
-        world->Step();
+        // Perform a step of the simulation.
+        sim->Step();
 
         // Render the view to the user.
         view->Render(); 

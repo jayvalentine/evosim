@@ -1,30 +1,32 @@
 #include "creature.h"
 
 // Constructor.
-Creature::Creature(double initialX, double initialY, double initialSize, double worldWidth, double worldHeight)
+Creature::Creature(World * w, double initialX, double initialY, double initialSize)
 {
+    world = w;
+
     x = initialX;
     y = initialY;
     size = initialSize;
-
-    maxX = worldWidth;
-    maxY = worldHeight;
-
     heading = 0.0;
     speed = 0.0;
 
     red = Random::UInt(0, 255);
     green = Random::UInt(0, 255);
     blue = Random::UInt(0, 255);
+
+    net = new NeuralNetwork(3, 2);
 }
 
 void Creature::Step(void)
 {
-    // Randomly change heading.
-    heading += Random::Double(-0.2, 0.2);
+    std::vector<double> inputs = {heading, speed, world->GetTile(x, y)};
 
-    // Randomly change speed.
-    speed += Random::Double(-0.2, 0.2);
+    std::vector<double> outputs = net->Outputs(inputs);
+
+    // Change speed and heading according to network.
+    speed = outputs[0];
+    heading = outputs[1];
 
     if (heading < 0.0) heading = 2.0 + heading;
     else if (heading > 2.0) heading -= 2.0;
@@ -35,9 +37,9 @@ void Creature::Step(void)
     x += dx;
     y += dy;
 
-    if (x > maxX) x -= maxX;
-    else if (x < 0.0) x = maxX + x;
+    if (x > world->Width()) x -= world->Width();
+    else if (x < 0.0) x = world->Width() + x;
 
-    if (y > maxY) y -= maxY;
-    else if (y < 0.0) y = maxY + y;
+    if (y > world->Height()) y -= world->Height();
+    else if (y < 0.0) y = world->Height() + y;
 }

@@ -7,8 +7,6 @@ World::World(double w, double h, double t)
 
     tileSize = t;
 
-    creatures = std::vector<Creature *>();
-
     tiles = std::vector<std::vector<double>>();
 
     // Calculate number of tiles per row and column.
@@ -29,15 +27,6 @@ World::World(double w, double h, double t)
 
 void World::Step(void)
 {
-    for (int i = 0; i < creatures.size(); i++)
-    {
-        creatures[i]->Step();
-    }
-}
-
-void World::AddCreature(double initialX, double initialY, double initialSize)
-{
-    creatures.push_back(new Creature(initialX, initialY, initialSize, width, height));
 }
 
 double World::GetTile(double x, double y)

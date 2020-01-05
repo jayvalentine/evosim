@@ -4,14 +4,16 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "world.h"
 #include "random.h"
+#include "neuralnetwork.h"
 
 class Creature
 {
     public:
 
     // Constructor.
-    Creature(double initialX, double initialY, double initialSize, double worldWidth, double worldHeight);
+    Creature(World * w, double initialX, double initialY, double initialSize);
 
     // Perform one 'step' of this creature's lifespan.
     void Step(void);
@@ -49,6 +51,12 @@ class Creature
     unsigned int red;
     unsigned int green;
     unsigned int blue;
+
+    // The world in which this creature exists.
+    World * world;
+
+    // This creature's neural network.
+    NeuralNetwork * net;
 };
 
 #endif // CREATURE_H
