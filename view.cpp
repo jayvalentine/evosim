@@ -124,15 +124,13 @@ void View::Render(void)
         viewX = tileRightPixels + 1;
     }
 
-    // Iterate over the creatures and draw a pixel for each one.
+    // Iterate over the creatures and draw each one.
     for (int i = 0; i < worldReference->CreatureCount(); i++)
     {
         Creature * creature = worldReference->GetCreature(i);
 
         double creatureX = creature->GetXPosition();
         double creatureY = creature->GetYPosition();
-
-        double creatureSize = creature->GetSize();
         
         if (creatureX < cameraLeft) continue;
         if (creatureX > cameraRight) continue;
@@ -140,23 +138,7 @@ void View::Render(void)
         if (creatureY < cameraTop) continue;
         if (creatureY > cameraBottom) continue;
 
-        // If we get here then the creature is within the bounds of the camera,
-        // so lets calculate its pixel position.
-
-        double creatureWithinX = creatureX - cameraLeft;
-        double creatureWithinY = creatureY - cameraTop;
-
-        // Scale both to get the pixel position.
-        int creaturePixelX = (int) (creatureWithinX * cameraScale);
-        int creaturePixelY = (int) (creatureWithinY * cameraScale);
-        int creaturePixelRadius = (int) ((creatureSize / 2) * cameraScale);
-
-        // Now draw a circle!
-        // Actually, draw several circles, so that we get a thick edge.
-        for (int i = 0; i < 5; i++)
-        {
-            DrawCircle(renderer, creaturePixelX, creaturePixelY, creaturePixelRadius - i, creature->Red(), creature->Green(), creature->Blue());
-        }
+        DrawCreature(renderer, creature, cameraLeft, cameraTop);
     }
 
     SDL_RenderPresent(renderer);
@@ -251,6 +233,41 @@ void View::HandleClick(int x, int y)
     }
 }
 
+void View::DrawCreature(SDL_Renderer * renderer, Creature * creature, double cameraLeft, double cameraTop)
+{
+    double creatureX = creature->GetXPosition();
+    double creatureY = creature->GetYPosition();
+
+    double creatureSize = creature->GetSize();
+
+    // If we get here then the creature is within the bounds of the camera,
+    // so lets calculate its pixel position.
+
+    double creatureWithinX = creatureX - cameraLeft;
+    double creatureWithinY = creatureY - cameraTop;
+
+    // Scale both to get the pixel position.
+    int creaturePixelX = (int) (creatureWithinX * cameraScale);
+    int creaturePixelY = (int) (creatureWithinY * cameraScale);
+    int creaturePixelRadius = (int) ((creatureSize / 2) * cameraScale);
+
+    // Now draw a circle!
+    // Actually, draw several circles, so that we get a thick edge.
+    //
+    // Here we define the thickness in terms of metres (2.5m), so that the pixel-width of the line
+    // changes as we scale.
+    int edgeThickness = (int) (2.5 * cameraScale);
+    if (edgeThickness < 1) edgeThickness = 1;
+
+    for (int i = 0; i < edgeThickness; i++)
+    {
+        DrawCircle(renderer, creaturePixelX, creaturePixelY, creaturePixelRadius - i, 0, 0, 0);
+    }
+
+    // Now fill the circle.
+    FillCircle(renderer, creaturePixelX, creaturePixelY, creaturePixelRadius - edgeThickness, creature->Red(), creature->Green(), creature->Blue());
+}
+
 void View::DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue)
 {
     SDL_SetRenderDrawColor(renderer, red, green, blue, SDL_ALPHA_OPAQUE);
@@ -289,4 +306,24 @@ void View::DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int rad
             error += (tx - diameter);
         }
     }
+}
+
+void View::FillCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue)
+{
+	for (double dy = 1; dy <= radius; dy += 1.0)
+	{
+		// This loop is unrolled a bit, only iterating through half of the
+		// height of the circle.  The result is used to draw a scan line and
+		// its mirror image below it.
+
+		// The following formula has been simplified from our original.  We
+		// are using half of the width of the circle because we are provided
+		// with a center and we need left/right coordinates.
+
+		double dx = floor(sqrt((2.0 * radius * dy) - (dy * dy)));
+		int x = centreX - dx;
+		SDL_SetRenderDrawColor(renderer, red, green, blue, SDL_ALPHA_OPAQUE);
+		SDL_RenderDrawLine(renderer, centreX - dx, centreY + dy - radius, centreX + dx, centreY + dy - radius);
+		SDL_RenderDrawLine(renderer, centreX - dx, centreY - dy + radius, centreX + dx, centreY - dy + radius);
+	}
 }

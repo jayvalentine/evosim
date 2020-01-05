@@ -37,9 +37,12 @@ class View
 
     void HandleClick(int x, int y);
 
+    void DrawCreature(SDL_Renderer * renderer, Creature * creature, double cameraLeft, double cameraTop);
+
     private:
 
     void DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue);
+    void FillCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue);
 
     double PanSpeed(void) { return CAMERA_SCROLL_FACTOR / cameraScale; }
 
