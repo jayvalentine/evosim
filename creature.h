@@ -12,6 +12,17 @@ class Creature
 {
     public:
 
+    struct Attributes
+    {
+        // Colour in RGB format.
+        unsigned char red;
+        unsigned char green;
+        unsigned char blue;
+
+        // Maximum speed in m/s of the creature.
+        double maxSpeed;
+    };
+
     // Constructor.
     Creature(World * w, double initialX, double initialY, double initialSize);
 
@@ -24,13 +35,17 @@ class Creature
 
     double GetSize(void) { return size; }
 
-    unsigned int Red(void) { return red; }
-    unsigned int Green(void) { return green; }
-    unsigned int Blue(void) { return blue; }
+    unsigned int Red(void) { return attributes.red; }
+    unsigned int Green(void) { return attributes.green; }
+    unsigned int Blue(void) { return attributes.blue; }
 
     NeuralNetwork * Net(void) { return net; }
 
+    Attributes GetAttributes(void) { return attributes; }
+
     private:
+
+    Attributes attributes;
 
     // X and Y position in the world of this creature.
     double x;
@@ -47,15 +62,6 @@ class Creature
 
     // Speed (in m/s) of this creature.
     double speed;
-
-    // Maximum x and y positions.
-    double maxX;
-    double maxY;
-
-    // Colour of this creature.
-    unsigned int red;
-    unsigned int green;
-    unsigned int blue;
 
     // The world in which this creature exists.
     World * world;

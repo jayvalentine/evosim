@@ -12,9 +12,11 @@ Creature::Creature(World * w, double initialX, double initialY, double initialSi
     speed = 0.0;
     rotationalSpeed = 0.0;
 
-    red = Random::UInt(0, 255);
-    green = Random::UInt(0, 255);
-    blue = Random::UInt(0, 255);
+    attributes.red = Random::UInt(0, 255);
+    attributes.green = Random::UInt(0, 255);
+    attributes.blue = Random::UInt(0, 255);
+
+    attributes.maxSpeed = Random::Double(1, 50);
 
     net = new NeuralNetwork(3, 2);
 }
@@ -42,8 +44,8 @@ void Creature::Step(void)
     if (heading < 0.0) heading = 2.0 + heading;
     else if (heading > 2.0) heading -= 2.0;
 
-    double dx = speed * cos(heading);
-    double dy = speed * sin(heading);
+    double dx = (speed * attributes.maxSpeed) * cos(heading);
+    double dy = (speed * attributes.maxSpeed) * sin(heading);
 
     x += dx;
     y += dy;
