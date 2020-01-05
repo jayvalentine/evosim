@@ -42,6 +42,9 @@ class Creature
     // Heading (in radians) of this creature.
     double heading;
 
+    // Rotational speed (in rad/s) of this creature.
+    double rotationalSpeed;
+
     // Speed (in m/s) of this creature.
     double speed;
 
