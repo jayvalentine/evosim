@@ -21,10 +21,18 @@ class Creature
 
         // Maximum speed in m/s of the creature.
         double maxSpeed;
+
+        // Maximum size (diameter) in m of the creature.
+        double maxSize; 
     };
 
     // Constructor.
-    Creature(World * w, double initialX, double initialY, double initialSize);
+    Creature(World * w, double initialX, double initialY);
+
+    // Destructor.
+    ~Creature();
+
+    bool Dead(void) { return dead; }
 
     // Perform one 'step' of this creature's lifespan.
     void Step(void);
@@ -33,7 +41,7 @@ class Creature
     double GetXPosition(void) { return x; }
     double GetYPosition(void) { return y; }
 
-    double GetSize(void) { return size; }
+    double GetSize(void) { return sizeFactor * attributes.maxSize; }
 
     unsigned int Red(void) { return attributes.red; }
     unsigned int Green(void) { return attributes.green; }
@@ -47,12 +55,15 @@ class Creature
 
     Attributes attributes;
 
+    // True if the creature has died, false otherwise.
+    bool dead;
+
     // X and Y position in the world of this creature.
     double x;
     double y;
 
-    // Size of this creature.
-    double size;
+    // Size of this creature, as a percentage of its maximum.
+    double sizeFactor;
 
     // Heading (in radians) of this creature.
     double heading;

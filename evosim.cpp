@@ -69,9 +69,8 @@ int main(int argc, char * argv[])
     {
         double x = Random::Double(0, WORLD_WIDTH);
         double y = Random::Double(0, WORLD_HEIGHT);
-        double size = Random::Double(MIN_SIZE, MAX_SIZE);
 
-        sim->AddCreature(x, y, size);
+        sim->AddCreature(x, y);
     }
 
     printf("World initialized\n");
@@ -93,86 +92,94 @@ int main(int argc, char * argv[])
 
     printf("View initialized\n");
 
-    // Main loop. Loop until the user quits.
-    while (!quit)
+    try
     {
-        // Get current time (in milliseconds).
-        // We'll use this to cap the framerate.
-        unsigned int startTime = SDL_GetTicks();
-
-        while (SDL_PollEvent(&e) != 0)
+        // Main loop. Loop until the user quits.
+        while (!quit)
         {
-            if (e.type == SDL_QUIT)
+            // Get current time (in milliseconds).
+            // We'll use this to cap the framerate.
+            unsigned int startTime = SDL_GetTicks();
+
+            while (SDL_PollEvent(&e) != 0)
             {
-                printf("Exiting...\n");
-                quit = true;
-            }
-
-            else if (e.type == SDL_MOUSEWHEEL)
-            {
-                printf("Scroll Event\n");
-
-                if (e.wheel.y > 0) view->ZoomIn();
-                else if (e.wheel.y < 0) view->ZoomOut();
-            }
-
-            else if (e.type == SDL_KEYDOWN)
-            {
-                printf("Keydown Event\n");
-
-                switch (e.key.keysym.sym)
+                if (e.type == SDL_QUIT)
                 {
-                    case SDLK_DOWN:
-                        view->PanDown();
-                        break;
-                    case SDLK_UP:
-                        view->PanUp();
-                        break;
-                    case SDLK_LEFT:
-                        view->PanLeft();
-                        break;
-                    case SDLK_RIGHT:
-                        view->PanRight();
-                        break;
-                    case SDLK_EQUALS:
-                        view->ZoomIn();
-                        break;
-                    case SDLK_MINUS:
-                        view->ZoomOut();
-                        break;
+                    printf("Exiting...\n");
+                    quit = true;
+                }
+
+                else if (e.type == SDL_MOUSEWHEEL)
+                {
+                    printf("Scroll Event\n");
+
+                    if (e.wheel.y > 0) view->ZoomIn();
+                    else if (e.wheel.y < 0) view->ZoomOut();
+                }
+
+                else if (e.type == SDL_KEYDOWN)
+                {
+                    printf("Keydown Event\n");
+
+                    switch (e.key.keysym.sym)
+                    {
+                        case SDLK_DOWN:
+                            view->PanDown();
+                            break;
+                        case SDLK_UP:
+                            view->PanUp();
+                            break;
+                        case SDLK_LEFT:
+                            view->PanLeft();
+                            break;
+                        case SDLK_RIGHT:
+                            view->PanRight();
+                            break;
+                        case SDLK_EQUALS:
+                            view->ZoomIn();
+                            break;
+                        case SDLK_MINUS:
+                            view->ZoomOut();
+                            break;
+                    }
+                }
+
+                else if (e.type == SDL_MOUSEBUTTONDOWN)
+                {
+                    if (e.button.button == SDL_BUTTON_LEFT)
+                    {
+                        view->HandleClick(e.button.x, e.button.y);
+                    }
                 }
             }
 
-            else if (e.type == SDL_MOUSEBUTTONDOWN)
+            // Perform a step of the simulation.
+            sim->Step();
+
+            // Render the view to the user.
+            view->Render(); 
+
+            // Get the current time (in milliseconds), and work out the time it took to perform this iteration.
+            unsigned int endTime = SDL_GetTicks();
+
+            unsigned int elapsedTime = endTime - startTime;
+
+            // We want to make sure that we run the iteration at most 60 times per second.
+            // Therefore, each iteration should take 1/60 seconds.
+            // Because we're working in milliseconds, this becomes 1000/60.
+            if (elapsedTime < (1000 / 60))
             {
-                if (e.button.button == SDL_BUTTON_LEFT)
-                {
-                    view->HandleClick(e.button.x, e.button.y);
-                }
+                unsigned int paddingTime = (1000 / 60) - elapsedTime;
+
+                // Sleep for the number of milliseconds calculated.
+                std::this_thread::sleep_for(std::chrono::milliseconds(paddingTime));
             }
         }
-
-        // Perform a step of the simulation.
-        sim->Step();
-
-        // Render the view to the user.
-        view->Render(); 
-
-        // Get the current time (in milliseconds), and work out the time it took to perform this iteration.
-        unsigned int endTime = SDL_GetTicks();
-
-        unsigned int elapsedTime = endTime - startTime;
-
-        // We want to make sure that we run the iteration at most 60 times per second.
-        // Therefore, each iteration should take 1/60 seconds.
-        // Because we're working in milliseconds, this becomes 1000/60.
-        if (elapsedTime < (1000 / 60))
-        {
-            unsigned int paddingTime = (1000 / 60) - elapsedTime;
-
-            // Sleep for the number of milliseconds calculated.
-            std::this_thread::sleep_for(std::chrono::milliseconds(paddingTime));
-        }
+    }
+    catch (const std::bad_alloc& e)
+    {
+        printf("Aborted due to bad allocation:\n");
+        printf("%s\n", e.what());
     }
 
     // Delete the view.

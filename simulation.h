@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "world.h"
 #include "creature.h"
 
@@ -9,15 +11,15 @@ class Simulation
 
     void Step(void);
 
-    void AddCreature(double initialX, double initialY, double initialSize);
+    void AddCreature(double initialX, double initialY);
 
-    Creature * GetCreature(int index) { return creatures[index]; };
+    std::shared_ptr<Creature> GetCreature(int index) { return creatures[index]; };
     size_t CreatureCount(void) { return creatures.size(); };
 
     World * GetWorld(void) { return world; };
 
     private:
 
-    std::vector<Creature *> creatures;
+    std::vector<std::shared_ptr<Creature>> creatures;
     World * world;
 };

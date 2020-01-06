@@ -139,16 +139,28 @@ void View::RenderNet(NeuralNetwork * net)
 void View::Render(void)
 {
     // If we're focusing on a creature, set the camera position.
-    if (focusCreature != NULL)
+    if (focusCreature)
     {
-        cameraX = focusCreature->GetXPosition();
-        cameraY = focusCreature->GetYPosition();
+        if (focusCreature->Dead())
+        {
+            focusCreature.reset();
+            SDL_HideWindow(netWindowReference);
+        }
+        else
+        {
+            cameraX = focusCreature->GetXPosition();
+            cameraY = focusCreature->GetYPosition();
 
-        // Show the information window.
-        SDL_ShowWindow(netWindowReference);
+            // Show the information window.
+            SDL_ShowWindow(netWindowReference);
 
-        // Render the creature's neural net to the information window.
-        RenderNet(focusCreature->Net());
+            // Render the creature's neural net to the information window.
+            RenderNet(focusCreature->Net());
+        }
+    }
+    else
+    {
+        SDL_HideWindow(netWindowReference);
     }
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
@@ -223,7 +235,7 @@ void View::Render(void)
                 continue;
             }
 
-            unsigned int green = 100 + (int)((tileValue / 100.0) * 155);
+            unsigned int green = 100 + (int)((tileValue / simReference->GetWorld()->MaximumFoodValue()) * 155);
 
             // Create a rectangle for this tile.
             SDL_Rect tile;
@@ -251,7 +263,9 @@ void View::Render(void)
     // Iterate over the creatures and draw each one.
     for (int i = 0; i < simReference->CreatureCount(); i++)
     {
-        Creature * creature = simReference->GetCreature(i);
+        std::shared_ptr<Creature> creature = simReference->GetCreature(i);
+
+        if (!creature) continue;
 
         double creatureX = creature->GetXPosition();
         double creatureY = creature->GetYPosition();
@@ -262,7 +276,7 @@ void View::Render(void)
         if (creatureY < cameraTop) continue;
         if (creatureY > cameraBottom) continue;
 
-        DrawCreature(renderer, creature, cameraLeft, cameraTop);
+        DrawCreature(renderer, creature.get(), cameraLeft, cameraTop);
     }
 
     SDL_RenderPresent(renderer);
@@ -337,7 +351,9 @@ void View::HandleClick(int x, int y)
     // Is this position a creature?
     for (int i = 0; i < simReference->CreatureCount(); i++)
     {
-        Creature * creature = simReference->GetCreature(i);
+        std::shared_ptr<Creature> creature = simReference->GetCreature(i);
+
+        if (!creature) continue;
 
         // Calculate distance from this creature to the clicked point.
         double xDist = fabs(realX - creature->GetXPosition());

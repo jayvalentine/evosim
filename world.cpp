@@ -20,7 +20,7 @@ World::World(double w, double h, double t)
 
         for (int y = 0; y < tilesPerRow; y++)
         {
-            tiles[x].push_back(Random::Double(0, 100));
+            tiles[x].push_back(Random::Double(0, maxFood));
         }
     }
 }
@@ -38,4 +38,24 @@ double World::GetTile(double x, double y)
     yIndex = yIndex % tiles[xIndex].size();
 
     return tiles[xIndex][yIndex];
+}
+
+void World::SetTile(double x, double y, double value)
+{
+    int xIndex = (int) (x / tileSize);
+    int yIndex = (int) (y / tileSize);
+
+    xIndex = xIndex % tiles.size();
+    yIndex = yIndex % tiles[xIndex].size();
+
+    tiles[xIndex][yIndex] = value;
+}
+
+double World::ReduceTileByPercentage(double x, double y, double percentage)
+{
+    double value = GetTile(x, y) * percentage;
+
+    SetTile(x, y, GetTile(x, y) - value);
+
+    return value;
 }

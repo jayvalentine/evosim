@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 
 #include <vector>
+#include <memory>
 
 #include "simulation.h"
 #include "creature.h"
@@ -62,7 +63,7 @@ class View
     double cameraScale;
 
     // Creature we're focusing on.
-    Creature * focusCreature;
+    std::shared_ptr<Creature> focusCreature;
 };
 
 #endif // VIEW_H
