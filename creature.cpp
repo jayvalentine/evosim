@@ -22,7 +22,7 @@ Creature::Creature(World * w, double initialX, double initialY)
 
     attributes.maxSize = Random::Double(1, 100);
 
-    net = new NeuralNetwork(4, 3);
+    net = new NeuralNetwork(4, 4);
 
     // Mutate the network three times.
     for (int i = 0; i < 3; i++)
@@ -37,8 +37,10 @@ Creature::~Creature()
     delete net;
 }
 
-void Creature::Step(void)
+Creature::StepState Creature::Step(void)
 {
+    StepState state = NO_CHANGE;
+
     std::vector<double> inputs = std::vector<double>();
 
     // Rotational velocity is in rad/s. A direct output of the network, so already normalised by sigmoid function.
@@ -86,6 +88,10 @@ void Creature::Step(void)
     if (y > world->Height()) y -= world->Height();
     else if (y < 0.0) y = world->Height() + y;
 
+    // Desire to give birth is output 3.
+    // If above 0.5, the creature may give birth.
+    if (outputs[3] > 0.5) state = GIVE_BIRTH;
+
     // Calculate energy used.
 
     // Each unit of speed costs one unit of energy.
@@ -97,12 +103,19 @@ void Creature::Step(void)
     double changeInSize = (inputEnergy - spentEnergy) / 10;
     sizeFactor = changeInSize / attributes.maxSize;
 
+    // Giving birth requires 1/10th of size.
+    if (state == GIVE_BIRTH) sizeFactor -= 0.1;
+
     // If size factor < 0.1, the creature is dead.
     if (sizeFactor < 0.1)
     {
         dead = true;
+        state = DEAD;
     }
 
     // Cap size factor at 1.
     if (sizeFactor > 1.0) sizeFactor = 1.0;
+
+    // Return the state, this is needed by the simulator.
+    return state;
 }

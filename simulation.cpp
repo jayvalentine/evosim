@@ -23,7 +23,9 @@ void Simulation::Step(void)
 
     for (int i = 0; i < creatures.size(); i++)
     {
-        creatures[i]->Step();
+        Creature::StepState state = creatures[i]->Step();
+
+        if (state == Creature::StepState::GIVE_BIRTH) printf("A creature gave birth!\n");
     }
 
     // Remove any creatures which have died.
@@ -52,7 +54,7 @@ void Simulation::Step(void)
     int creaturesToAdd = minimumCreatures - creatures.size();
 
     if (creaturesToAdd > 0) printf("Population below minimum. Injecting new life...\n");
-    
+
     for (int i = 0; i < creaturesToAdd; i++)
     {
         AddCreature(Random::Double(0, world->Width()), Random::Double(0, world->Height()));

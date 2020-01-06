@@ -13,6 +13,14 @@ class Creature
 {
     public:
 
+    // Possible states of a creature following a step.
+    enum StepState
+    {
+        NO_CHANGE,
+        GIVE_BIRTH,
+        DEAD
+    };
+
     struct Attributes
     {
         // Colour in RGB format.
@@ -36,7 +44,7 @@ class Creature
     bool Dead(void) { return dead; }
 
     // Perform one 'step' of this creature's lifespan.
-    void Step(void);
+    StepState Step(void);
 
     // Getters for private properties.
     double GetXPosition(void) { return x; }
