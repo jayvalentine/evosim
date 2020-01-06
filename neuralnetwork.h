@@ -1,3 +1,6 @@
+#ifndef NEURALNETWORK_H
+#define NEURALNETWORK_H
+
 #include <vector>
 #include <tuple>
 
@@ -20,6 +23,9 @@ class Synapse
     int End(void) { return end; }
     double Weight(void) { return weight; }
 
+    void ChangeWeight(double newWeight);
+    void ScaleWeight(double factor);
+
     private:
 
     int start;
@@ -39,6 +45,8 @@ class NeuralNetwork
 
     NeuralNetwork(int inputs, int outputs);
 
+    ~NeuralNetwork();
+
     std::vector<double> OutputValues(std::vector<double> inputs);
 
     void AddSynapse(int input, int output, double weight);
@@ -47,11 +55,13 @@ class NeuralNetwork
 
     std::vector<int> Inputs(void);
     std::vector<int> Outputs(void);
-    std::vector<Synapse> Synapses(void);
+    std::vector<Synapse *> Synapses(void);
 
     private:
 
-    std::vector<Synapse> synapses;
+    std::vector<Synapse *> synapses;
     std::vector<double> inputValues;
     std::vector<NeuronType> neuronTypes;
 };
+
+#endif // NEURALNETWORK_H

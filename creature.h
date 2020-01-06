@@ -7,6 +7,7 @@
 #include "world.h"
 #include "random.h"
 #include "neuralnetwork.h"
+#include "evolution.h"
 
 class Creature
 {

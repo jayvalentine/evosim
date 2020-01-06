@@ -23,6 +23,12 @@ Creature::Creature(World * w, double initialX, double initialY)
     attributes.maxSize = Random::Double(1, 100);
 
     net = new NeuralNetwork(4, 3);
+
+    // Mutate the network three times.
+    for (int i = 0; i < 3; i++)
+    {
+        Evolution::Mutate(net);
+    }
 }
 
 // Destructor.

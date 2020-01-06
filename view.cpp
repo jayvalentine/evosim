@@ -31,18 +31,18 @@ void View::RenderNet(NeuralNetwork * net)
     SDL_RenderClear(netRenderer);
 
     // First draw the synapses. That way the neurons will be drawn over them.
-    std::vector<Synapse> synapses = net->Synapses();
+    std::vector<Synapse *> synapses = net->Synapses();
 
     for (int i = 0; i < synapses.size(); i++)
     {
         // From an input to an output.
-        Synapse s = synapses[i];
+        Synapse * s = synapses[i];
 
         int startX = 40;
         int endX = 360;
 
-        int startY = 40 + (70 * s.Start());
-        int endY = 40 + (70 * (s.End() - inputs.size()));
+        int startY = 40 + (70 * s->Start());
+        int endY = 40 + (70 * (s->End() - inputs.size()));
 
         SDL_SetRenderDrawColor(netRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawLine(netRenderer, startX, startY, endX, endY);

@@ -1,5 +1,15 @@
 #include "neuralnetwork.h"
 
+void Synapse::ChangeWeight(double newWeight)
+{
+    weight = newWeight;
+}
+
+void Synapse::ScaleWeight(double factor)
+{
+    ChangeWeight(weight * factor);
+}
+
 NeuralNetwork::NeuralNetwork(int inputs, int outputs)
 {
     neuronTypes = std::vector<NeuronType>();
@@ -17,14 +27,12 @@ NeuralNetwork::NeuralNetwork(int inputs, int outputs)
     {
         neuronTypes[o] = OUTPUT;
     }
+}
 
-    for (int i = 0; i < inputs; i++)
-    {
-        for (int o = inputs; o < inputs + outputs; o++)
-        {
-            AddSynapse(i, o, Random::Double(-1.0, 1.0));
-        }
-    }
+NeuralNetwork::~NeuralNetwork()
+{
+    // Delete synapse instances.
+    for (int i = 0; i < synapses.size(); i++) delete synapses[i];
 }
 
 std::vector<double> NeuralNetwork::OutputValues(std::vector<double> inputs)
@@ -49,7 +57,7 @@ std::vector<double> NeuralNetwork::OutputValues(std::vector<double> inputs)
 
 void NeuralNetwork::AddSynapse(int input, int output, double weight)
 {
-    synapses.push_back(Synapse(input, output, weight));
+    synapses.push_back(new Synapse(input, output, weight));
 }
 
 double NeuralNetwork::NeuronValue(int neuron)
@@ -61,11 +69,11 @@ double NeuralNetwork::NeuronValue(int neuron)
     }
 
     // First, find all synapses for which the end neuron is this one.
-    std::vector<Synapse> inputSynapses = std::vector<Synapse>();
+    std::vector<Synapse *> inputSynapses = std::vector<Synapse *>();
 
     for (int i = 0; i < synapses.size(); i++)
     {
-        if (synapses[i].End() == neuron)
+        if (synapses[i]->End() == neuron)
         {
             inputSynapses.push_back(synapses[i]);
         }
@@ -76,7 +84,7 @@ double NeuralNetwork::NeuronValue(int neuron)
 
     for (int i = 0; i < inputSynapses.size(); i++)
     {
-        weightedSum += (inputSynapses[i].Weight() * NeuronValue(inputSynapses[i].Start()));
+        weightedSum += (inputSynapses[i]->Weight() * NeuronValue(inputSynapses[i]->Start()));
     }
 
     // The value of the neuron is the weighted sum passed through a sigmoid function.
@@ -108,7 +116,7 @@ std::vector<int> NeuralNetwork::Outputs(void)
     return outputs;
 }
 
-std::vector<Synapse> NeuralNetwork::Synapses(void)
+std::vector<Synapse *> NeuralNetwork::Synapses(void)
 {
     return synapses;
 }
