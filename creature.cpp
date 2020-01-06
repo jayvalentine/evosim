@@ -1,7 +1,7 @@
 #include "creature.h"
 
 // Constructor.
-Creature::Creature(World * w, double initialX, double initialY)
+Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * n)
 {
     dead = false;
 
@@ -22,13 +22,7 @@ Creature::Creature(World * w, double initialX, double initialY)
 
     attributes.maxSize = Random::Double(1, 100);
 
-    net = new NeuralNetwork(4, 4);
-
-    // Mutate the network three times.
-    for (int i = 0; i < 3; i++)
-    {
-        Evolution::Mutate(net);
-    }
+    net = n;
 }
 
 // Destructor.
@@ -89,8 +83,8 @@ Creature::StepState Creature::Step(void)
     else if (y < 0.0) y = world->Height() + y;
 
     // Desire to give birth is output 3.
-    // If above 0.5, the creature may give birth.
-    if (outputs[3] > 0.5) state = GIVE_BIRTH;
+    // If above 0.2, the creature may give birth.
+    if (outputs[3] > 0.2) state = GIVE_BIRTH;
 
     // Calculate energy used.
 

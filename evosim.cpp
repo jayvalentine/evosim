@@ -24,8 +24,8 @@
 #define MIN_SIZE 0.1
 #define MAX_SIZE 100.0
 
-#define START_CREATURES 5000
-#define MIN_CREATURES 100
+#define START_CREATURES 10000
+#define MIN_CREATURES 500
 
 // Frames per second of the application.
 #define FPS 60
@@ -71,7 +71,7 @@ int main(int argc, char * argv[])
         double x = Random::Double(0, WORLD_WIDTH);
         double y = Random::Double(0, WORLD_HEIGHT);
 
-        sim->AddCreature(x, y);
+        sim->AddInitialCreature(x, y);
     }
 
     printf("World initialized\n");

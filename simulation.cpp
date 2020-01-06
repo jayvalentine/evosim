@@ -7,11 +7,45 @@ Simulation::Simulation(World * w, int minCreatures)
     minimumCreatures = minCreatures;
 }
 
-void Simulation::AddCreature(double initialX, double initialY)
+void Simulation::AddInitialCreature(double initialX, double initialY)
 {
-    // Create a new shared_ptr for the creature;
-    Creature * creature = new Creature(world, initialX, initialY);
+    // Create a new neural network for the creature.
+    NeuralNetwork * net = new NeuralNetwork(4, 4);
 
+    // Mutate the network a bit.
+    for (int i = 0; i < 5; i++)
+    {
+        Evolution::Mutate(net);
+    }
+
+    // Create a new shared_ptr for the creature;
+    Creature * creature = new Creature(world, initialX, initialY, net);
+
+    AddCreature(creature);
+}
+
+void Simulation::AddOffspringCreature(Creature * creature)
+{
+    // Create a new neural network for the creature and copy the synapses of the old one.
+    NeuralNetwork * net = new NeuralNetwork(4, 4);
+
+    for (auto s : creature->Net()->Synapses())
+    {
+        net->AddSynapse(s->Start(), s->End(), s->Weight());
+    }
+
+    // Mutate the network.
+    Evolution::Mutate(net);
+
+    // Create a new shared_ptr for the creature
+    Creature * offspring = new Creature(world, creature->GetXPosition(), creature->GetYPosition(), net);
+
+    AddCreature(offspring);
+}
+
+void Simulation::AddCreature(const Creature * creature)
+{
+    // Create a shared_ptr and add to the vector.
     std::shared_ptr<Creature> ptr = std::make_shared<Creature>(*creature);
 
     creatures.push_back(ptr);
@@ -25,7 +59,10 @@ void Simulation::Step(void)
     {
         Creature::StepState state = creatures[i]->Step();
 
-        if (state == Creature::StepState::GIVE_BIRTH) printf("A creature gave birth!\n");
+        if (state == Creature::StepState::GIVE_BIRTH)
+        {
+            AddOffspringCreature(creatures[i].get());
+        }
     }
 
     // Remove any creatures which have died.
@@ -51,12 +88,12 @@ void Simulation::Step(void)
     }
 
     // If there are fewer creatures than the minimum, add creatures to pad out.
-    int creaturesToAdd = minimumCreatures - creatures.size();
+    int creaturesToAdd = (minimumCreatures - creatures.size()) + (minimumCreatures / 2);
 
     if (creaturesToAdd > 0) printf("Population below minimum. Injecting new life...\n");
 
     for (int i = 0; i < creaturesToAdd; i++)
     {
-        AddCreature(Random::Double(0, world->Width()), Random::Double(0, world->Height()));
+        AddInitialCreature(Random::Double(0, world->Width()), Random::Double(0, world->Height()));
     }
 }

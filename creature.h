@@ -7,7 +7,6 @@
 #include "world.h"
 #include "random.h"
 #include "neuralnetwork.h"
-#include "evolution.h"
 
 class Creature
 {
@@ -36,7 +35,7 @@ class Creature
     };
 
     // Constructor.
-    Creature(World * w, double initialX, double initialY);
+    Creature(World * w, double initialX, double initialY, NeuralNetwork * n);
 
     // Destructor.
     ~Creature();
