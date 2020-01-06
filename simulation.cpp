@@ -1,9 +1,10 @@
 #include "simulation.h"
 
-Simulation::Simulation(World * w)
+Simulation::Simulation(World * w, int minCreatures)
 {
     creatures = std::vector<std::shared_ptr<Creature>>();
     world = w;
+    minimumCreatures = minCreatures;
 }
 
 void Simulation::AddCreature(double initialX, double initialY)
@@ -22,7 +23,6 @@ void Simulation::Step(void)
 
     for (int i = 0; i < creatures.size(); i++)
     {
-        printf("Stepping creature %d\n", i);
         creatures[i]->Step();
     }
 
@@ -33,7 +33,6 @@ void Simulation::Step(void)
         if (creatures[i]->Dead())
         {
             deadIndexes.push_back(i);
-            printf("A creature has died!\n");
         }
     }
 
@@ -44,10 +43,18 @@ void Simulation::Step(void)
         int index = deadIndexes[deadIndexes.size() - 1];
         deadIndexes.pop_back();
 
-        printf("Deleting %d\n", index);
-
         creatures[index].reset();
 
         creatures.erase(creatures.begin() + index);
+    }
+
+    // If there are fewer creatures than the minimum, add creatures to pad out.
+    int creaturesToAdd = minimumCreatures - creatures.size();
+
+    if (creaturesToAdd > 0) printf("Population below minimum. Injecting new life...\n");
+    
+    for (int i = 0; i < creaturesToAdd; i++)
+    {
+        AddCreature(Random::Double(0, world->Width()), Random::Double(0, world->Height()));
     }
 }

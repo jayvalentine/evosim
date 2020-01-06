@@ -7,7 +7,7 @@ class Simulation
 {
     public:
 
-    Simulation(World * w);
+    Simulation(World * w, int minCreatures);
 
     void Step(void);
 
@@ -22,4 +22,7 @@ class Simulation
 
     std::vector<std::shared_ptr<Creature>> creatures;
     World * world;
+
+    // Minimum number of creatures to maintain in the world.
+    int minimumCreatures;
 };

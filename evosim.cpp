@@ -24,7 +24,8 @@
 #define MIN_SIZE 0.1
 #define MAX_SIZE 100.0
 
-#define NUM_CREATURES 1000
+#define START_CREATURES 5000
+#define MIN_CREATURES 100
 
 // Frames per second of the application.
 #define FPS 60
@@ -59,13 +60,13 @@ int main(int argc, char * argv[])
     // Initialize a world.
     World * world = new World(WORLD_WIDTH, WORLD_HEIGHT, WORLD_TILESIZE);
 
-    Simulation * sim = new Simulation(world);
+    Simulation * sim = new Simulation(world, MIN_CREATURES);
 
     // Initialize the random generator.
     Random::Init(std::chrono::system_clock::now().time_since_epoch().count());
 
     // Initialize creatures.
-    for (int i = 0; i < NUM_CREATURES; i++)
+    for (int i = 0; i < START_CREATURES; i++)
     {
         double x = Random::Double(0, WORLD_WIDTH);
         double y = Random::Double(0, WORLD_HEIGHT);
