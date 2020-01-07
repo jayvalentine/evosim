@@ -51,6 +51,7 @@ class Creature
     double GetYPosition(void) { return y; }
 
     double GetSize(void) { return sizeFactor * attributes.maxSize; }
+    double GetSpeed(void) { return speed * attributes.maxSpeed; }
 
     unsigned int Red(void) { return attributes.red; }
     unsigned int Green(void) { return attributes.green; }

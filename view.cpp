@@ -141,6 +141,14 @@ void View::RenderInfo(Creature * creature)
     sprintf(buf, "Generation: %d", creature->Generation());
 
     RenderText(netRenderer, buf, 10, startPosition + 40);
+
+    sprintf(buf, "Speed:      %3.1fm/s", creature->GetSpeed());
+
+    RenderText(netRenderer, buf, 10, startPosition + 70);
+
+    sprintf(buf, "Size:       %3.1fm", creature->GetSize());
+
+    RenderText(netRenderer, buf, 10, startPosition + 100);
 }
 
 void View::RenderText(SDL_Renderer * r, const char * text, int x, int y)
@@ -198,7 +206,6 @@ void View::Render(void)
         if (focusCreature->Dead())
         {
             focusCreature.reset();
-            SDL_HideWindow(netWindowReference);
         }
         else
         {
@@ -219,10 +226,6 @@ void View::Render(void)
 
             SDL_RenderPresent(netRenderer);
         }
-    }
-    else
-    {
-        SDL_HideWindow(netWindowReference);
     }
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
