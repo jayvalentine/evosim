@@ -29,6 +29,8 @@ class View
 
     void Render(void);
 
+    void RenderSimulationInfo(const char * buf);
+
     void ZoomIn(void);
     void ZoomOut(void);
 
@@ -46,7 +48,7 @@ class View
 
     private:
 
-    void RenderText(const char * text, int x, int y);
+    void RenderText(SDL_Renderer * r, const char * text, int x, int y);
 
     void RenderNet(NeuralNetwork * net);
     void RenderInfo(Creature * creature);

@@ -136,20 +136,20 @@ void View::RenderInfo(Creature * creature)
 
     char buf[100];
 
-    RenderText("Attributes:", 10, startPosition + 10);
+    RenderText(netRenderer, "Attributes:", 10, startPosition + 10);
 
     sprintf(buf, "Generation: %d", creature->Generation());
 
-    RenderText(buf, 10, startPosition + 40);
+    RenderText(netRenderer, buf, 10, startPosition + 40);
 }
 
-void View::RenderText(const char * text, int x, int y)
+void View::RenderText(SDL_Renderer * r, const char * text, int x, int y)
 {
     SDL_Color textColor = {255, 255, 255};
 
     SDL_Surface * textSurface = TTF_RenderText_Solid(font, text, textColor);
 
-    SDL_Texture * textTexture = SDL_CreateTextureFromSurface(netRenderer, textSurface);
+    SDL_Texture * textTexture = SDL_CreateTextureFromSurface(r, textSurface);
 
     // A rectangle of where we want this text to be.
     SDL_Rect dst;
@@ -158,11 +158,36 @@ void View::RenderText(const char * text, int x, int y)
     dst.w = textSurface->w;
     dst.h = textSurface->h;
 
-    SDL_RenderCopy(netRenderer, textTexture, NULL, &dst);
+    SDL_RenderCopy(r, textTexture, NULL, &dst);
 
     // Free the surface and texture.
-    //free(textSurface);
-    //free(textTexture);
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+}
+
+void View::RenderSimulationInfo(const char * buf)
+{
+    int width;
+    int height;
+
+    SDL_GetRendererOutputSize(renderer, &width, &height);
+
+    int startPosition = height - 50;
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+    // Draw a black rectangle in the info box.
+    SDL_Rect rect;
+    rect.x = 0;
+    rect.y = startPosition;
+    rect.h = 50;
+    rect.w = width;
+
+    SDL_RenderFillRect(renderer, &rect);
+
+    RenderText(renderer, buf, 10, startPosition + 10);
+
+    SDL_RenderPresent(renderer);
 }
 
 void View::Render(void)
@@ -207,6 +232,10 @@ void View::Render(void)
     int height;
 
     SDL_GetRendererOutputSize(renderer, &width, &height);
+
+    // Leave 50 pixels at the bottom of the screen.
+    // This is for the simulation info-bar.
+    height -= 50;
 
     // Determine the width and height (in metres) of the camera.
     double cameraWidth = width / cameraScale;
@@ -315,6 +344,17 @@ void View::Render(void)
 
         DrawCreature(renderer, creature.get(), cameraLeft, cameraTop);
     }
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+    // Draw a black rectangle in the info box.
+    SDL_Rect rect;
+    rect.x = 0;
+    rect.y = height;
+    rect.h = 50;
+    rect.w = width;
+
+    SDL_RenderFillRect(renderer, &rect);
 
     SDL_RenderPresent(renderer);
 }

@@ -39,7 +39,7 @@ void PrettyTime(char * buf, unsigned long time)
     unsigned int minutes = (time % 3600) / 60;
     unsigned int seconds = time % 60;
 
-    sprintf(buf, "%uh %um %us", hours, minutes, seconds);
+    sprintf(buf, "%02uh %02um %02us", hours, minutes, seconds);
 }
 
 int main(int argc, char * argv[])
@@ -110,7 +110,6 @@ int main(int argc, char * argv[])
 
     // Store the start time of the simulation.
     unsigned int simulationBegin = SDL_GetTicks();
-    unsigned int lastRecordedTime = 0;
 
     // Whether or not we are rendering the view.
     bool render = true;
@@ -199,18 +198,18 @@ int main(int argc, char * argv[])
 
             // Work out the time since the simulation started.
             unsigned int totalTime = endTime - simulationBegin;
-            // If we're in a multiple of seconds, print a message.
-            if (totalTime / 2000 != lastRecordedTime)
-            {
-                char runTimeString[100];
-                char simTimeString[100];
+            
+            char runTimeString[100];
+            char simTimeString[100];
 
-                PrettyTime(runTimeString, totalTime / 1000);
-                PrettyTime(simTimeString, sim->SimulationTime());
+            PrettyTime(runTimeString, totalTime / 1000);
+            PrettyTime(simTimeString, sim->SimulationTime());
 
-                printf("Run time: %s, Simulation time: %s, Population: %u\n", runTimeString, simTimeString, sim->CreatureCount());
-                lastRecordedTime = totalTime / 2000;
-            }
+            char infoBuf[200];
+
+            sprintf(infoBuf, "Run time: %s, Simulation time: %s, Population: %10lu", runTimeString, simTimeString, sim->CreatureCount());
+
+            view->RenderSimulationInfo(infoBuf);
 
             // Work out the time it took to perform this iteration.
             unsigned int elapsedTime = endTime - startTime;
