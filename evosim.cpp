@@ -148,6 +148,12 @@ int main(int argc, char * argv[])
                         case SDLK_MINUS:
                             view->ZoomOut();
                             break;
+                        case SDLK_SPACE:
+                            view->SelectFirst();
+                            break;
+                        case SDLK_BACKSPACE:
+                            view->SelectLast();
+                            break;
                     }
                 }
 

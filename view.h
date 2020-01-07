@@ -37,6 +37,9 @@ class View
     void PanUp(void);
     void PanDown(void);
 
+    void SelectFirst(void);
+    void SelectLast(void);
+
     void HandleClick(int x, int y);
 
     void DrawCreature(SDL_Renderer * renderer, Creature * creature, double cameraLeft, double cameraTop);

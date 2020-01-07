@@ -357,6 +357,22 @@ void View::PanDown(void)
     if (cameraY > simReference->GetWorld()->Height()) cameraY = simReference->GetWorld()->Height();
 }
 
+void View::SelectFirst(void)
+{
+    // Return if there are no creatures.
+    if (simReference->CreatureCount() == 0) return;
+
+    focusCreature = simReference->GetCreature(0);
+}
+
+void View::SelectLast(void)
+{
+    // Return if there are no creatures.
+    if (simReference->CreatureCount() == 0) return;
+
+    focusCreature = simReference->GetCreature(simReference->CreatureCount() - 1);
+}
+
 void View::HandleClick(int x, int y)
 {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
