@@ -56,11 +56,11 @@ void Simulation::AddCreature(const Creature * creature)
 
 void Simulation::Step(void)
 {
-    world->Step();
+    world->Step(stepRate);
 
     for (int i = 0; i < creatures.size(); i++)
     {
-        Creature::StepState state = creatures[i]->Step();
+        Creature::StepState state = creatures[i]->Step(stepRate);
 
         if (state == Creature::StepState::GIVE_BIRTH)
         {

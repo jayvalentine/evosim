@@ -25,7 +25,7 @@ World::World(double w, double h, double t)
     }
 }
 
-void World::Step(void)
+void World::Step(unsigned int rate)
 {
 }
 

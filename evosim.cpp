@@ -28,7 +28,7 @@
 #define MIN_CREATURES 200
 
 // Frames per second of the application.
-#define FPS 60
+#define FPS 30
 
 // Global random engine.
 std::default_random_engine g_generator;

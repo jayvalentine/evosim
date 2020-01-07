@@ -43,7 +43,7 @@ class Creature
     bool Dead(void) { return dead; }
 
     // Perform one 'step' of this creature's lifespan.
-    StepState Step(void);
+    StepState Step(unsigned int rate);
 
     // Getters for private properties.
     int Generation(void) { return generation; }

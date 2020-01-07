@@ -11,7 +11,7 @@ class World
 
     World(double w, double h, double tileSize);
 
-    void Step(void);
+    void Step(unsigned int rate);
 
     double MaximumFoodValue(void) { return maxFood; }
 

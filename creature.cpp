@@ -33,17 +33,17 @@ Creature::~Creature()
     delete net;
 }
 
-Creature::StepState Creature::Step(void)
+Creature::StepState Creature::Step(unsigned int rate)
 {
     StepState state = NO_CHANGE;
 
     std::vector<double> inputs = std::vector<double>();
 
     // Rotational velocity is in rad/s. A direct output of the network, so already normalised by sigmoid function.
-    inputs.push_back(rotationalSpeed * 60);
+    inputs.push_back(rotationalSpeed * rate);
 
     // Speed is a direct output of the network, so is already normalised by sigmoid function.
-    inputs.push_back(speed * 60);
+    inputs.push_back(speed * rate);
 
     // Tile value is between 0 and max. Divide by max / 2 and subtract 1.
     inputs.push_back((world->GetTile(x, y) / (world->MaximumFoodValue() / 2)) - 1);
@@ -57,15 +57,15 @@ Creature::StepState Creature::Step(void)
 
     // Feeding factor is 0.1. The creature consumes 10% of the food in the tile it's on.
     // Scale down because this is per-step, and the feeding rate is per-second.
-    double food = world->ReduceTileByPercentage(x, y, feedFactor / 60);
+    double food = world->ReduceTileByPercentage(x, y, feedFactor / rate);
 
     // Input energy is a proportion of food. Some is wasted.
     double inputEnergy = (food * 0.8);
 
     // Change speed and heading according to network.
-    // One step is actually 1/60th of a second, so these values need to be scaled down.
-    speed = outputs[0] / 60;
-    rotationalSpeed = outputs[1] / 60;
+    // These values need to be scaled down.
+    speed = outputs[0] / rate;
+    rotationalSpeed = outputs[1] / rate;
 
     heading += rotationalSpeed;
 
