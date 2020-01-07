@@ -35,7 +35,7 @@ class Creature
     };
 
     // Constructor.
-    Creature(World * w, double initialX, double initialY, NeuralNetwork * n, int gen);
+    Creature(World * w, double initialX, double initialY, NeuralNetwork * n, Attributes attr, int gen);
 
     // Destructor.
     ~Creature();

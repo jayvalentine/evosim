@@ -21,8 +21,19 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
         Evolution::Mutate(net);
     }
 
+    // Create the creature's attributes.
+    Creature::Attributes attr;
+
+    attr.red = Random::UInt(0, 255);
+    attr.green = Random::UInt(0, 255);
+    attr.blue = Random::UInt(0, 255);
+
+    attr.maxSpeed = Random::Double(1, 50);
+
+    attr.maxSize = Random::Double(1, 100);
+
     // Create a new shared_ptr for the creature;
-    Creature * creature = new Creature(world, initialX, initialY, net, 0);
+    Creature * creature = new Creature(world, initialX, initialY, net, attr, 0);
 
     AddCreature(creature);
 }
@@ -40,8 +51,24 @@ void Simulation::AddOffspringCreature(Creature * creature)
     // Mutate the network.
     Evolution::Mutate(net);
 
+    // Clone the creature's attributes and mutate a bit.
+    Creature::Attributes attr = creature->GetAttributes();
+
+    // Color.
+    attr.red += Random::Int(-10, 10);
+    attr.green += Random::Int(-10, 10);
+    attr.blue += Random::Int(-10, 10);
+
+    // Cap these at 0-255.
+    if (attr.red > 255) attr.red = 255;
+    if (attr.green > 255) attr.green = 255;
+    if (attr.blue > 255) attr.blue = 255;
+
+    attr.maxSpeed += Random::Double(-5, 5);
+    attr.maxSize += Random::Double(-10, 10);
+
     // Create a new shared_ptr for the creature
-    Creature * offspring = new Creature(world, creature->GetXPosition(), creature->GetYPosition(), net, creature->Generation() + 1);
+    Creature * offspring = new Creature(world, creature->GetXPosition(), creature->GetYPosition(), net, attr, creature->Generation() + 1);
 
     AddCreature(offspring);
 }

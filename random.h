@@ -10,6 +10,7 @@ namespace Random
 
     double Double(double min, double max);
     unsigned int UInt(unsigned int min, unsigned int max);
+    int Int(int min, int max);
 
     // Template function defined in header.
     template<class T> T Choice(std::vector<T> options);

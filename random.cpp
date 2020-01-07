@@ -18,3 +18,10 @@ unsigned int Random::UInt(unsigned int min, unsigned int max)
 
     return min + r;
 }
+
+int Random::Int(int min, int max)
+{
+    int r = (int) rand() % (max - min + 1);
+
+    return min + r;
+}

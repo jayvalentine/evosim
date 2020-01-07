@@ -1,7 +1,7 @@
 #include "creature.h"
 
 // Constructor.
-Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * n, int gen)
+Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * n, Attributes attr, int gen)
 {
     generation = gen;
 
@@ -16,13 +16,7 @@ Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * 
     rotationalSpeed = 0.0;
     sizeFactor = 0.5;
 
-    attributes.red = Random::UInt(0, 255);
-    attributes.green = Random::UInt(0, 255);
-    attributes.blue = Random::UInt(0, 255);
-
-    attributes.maxSpeed = Random::Double(1, 50);
-
-    attributes.maxSize = Random::Double(1, 100);
+    attributes = attr;
 
     net = n;
 }
