@@ -24,14 +24,23 @@
 #define MIN_SIZE 0.1
 #define MAX_SIZE 100.0
 
-#define START_CREATURES 10000
-#define MIN_CREATURES 500
+#define START_CREATURES 5000
+#define MIN_CREATURES 200
 
 // Frames per second of the application.
 #define FPS 60
 
 // Global random engine.
 std::default_random_engine g_generator;
+
+void PrettyTime(char * buf, unsigned long time)
+{
+    unsigned int hours = time / 3600;
+    unsigned int minutes = (time % 3600) / 60;
+    unsigned int seconds = time % 60;
+
+    sprintf(buf, "%uh %um %us", hours, minutes, seconds);
+}
 
 int main(int argc, char * argv[])
 {
@@ -66,7 +75,7 @@ int main(int argc, char * argv[])
     // Initialize a world.
     World * world = new World(WORLD_WIDTH, WORLD_HEIGHT, WORLD_TILESIZE);
 
-    Simulation * sim = new Simulation(world, MIN_CREATURES);
+    Simulation * sim = new Simulation(world, MIN_CREATURES, FPS);
 
     // Initialize the random generator.
     Random::Init(std::chrono::system_clock::now().time_since_epoch().count());
@@ -98,6 +107,13 @@ int main(int argc, char * argv[])
     bool quit = false;
 
     printf("View initialized\n");
+
+    // Store the start time of the simulation.
+    unsigned int simulationBegin = SDL_GetTicks();
+    unsigned int lastRecordedTime = 0;
+
+    // Whether or not we are rendering the view.
+    bool render = true;
 
     try
     {
@@ -154,6 +170,9 @@ int main(int argc, char * argv[])
                         case SDLK_BACKSPACE:
                             view->SelectLast();
                             break;
+                        case SDLK_r:
+                            render = !render;
+                            break;
                     }
                 }
 
@@ -170,17 +189,38 @@ int main(int argc, char * argv[])
             sim->Step();
 
             // Render the view to the user.
-            view->Render(); 
+            if (render)
+            {
+                view->Render(); 
+            }
 
-            // Get the current time (in milliseconds), and work out the time it took to perform this iteration.
+            // Get the current time (in milliseconds).
             unsigned int endTime = SDL_GetTicks();
 
+            // Work out the time since the simulation started.
+            unsigned int totalTime = endTime - simulationBegin;
+            // If we're in a multiple of seconds, print a message.
+            if (totalTime / 2000 != lastRecordedTime)
+            {
+                char runTimeString[100];
+                char simTimeString[100];
+
+                PrettyTime(runTimeString, totalTime / 1000);
+                PrettyTime(simTimeString, sim->SimulationTime());
+
+                printf("Run time: %s, Simulation time: %s\n", runTimeString, simTimeString);
+                lastRecordedTime = totalTime / 2000;
+            }
+
+            // Work out the time it took to perform this iteration.
             unsigned int elapsedTime = endTime - startTime;
 
             // We want to make sure that we run the iteration at most 60 times per second.
             // Therefore, each iteration should take 1/60 seconds.
             // Because we're working in milliseconds, this becomes 1000/60.
-            if (elapsedTime < (1000 / 60))
+            //
+            // We skip this if we're not rendering.
+            if (render && elapsedTime < (1000 / 60))
             {
                 unsigned int paddingTime = (1000 / 60) - elapsedTime;
 

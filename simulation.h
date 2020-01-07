@@ -9,9 +9,11 @@ class Simulation
 {
     public:
 
-    Simulation(World * w, int minCreatures);
+    Simulation(World * w, int minCreatures, unsigned int rate);
 
     void Step(void);
+
+    unsigned int SimulationTime(void);
 
     void AddInitialCreature(double initialX, double initialY);
     void AddOffspringCreature(Creature * creature);
@@ -30,4 +32,7 @@ class Simulation
 
     // Minimum number of creatures to maintain in the world.
     int minimumCreatures;
+
+    unsigned int stepRate;
+    unsigned long steps;
 };

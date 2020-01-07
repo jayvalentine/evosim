@@ -1,10 +1,13 @@
 #include "simulation.h"
 
-Simulation::Simulation(World * w, int minCreatures)
+Simulation::Simulation(World * w, int minCreatures, unsigned int rate)
 {
     creatures = std::vector<std::shared_ptr<Creature>>();
     world = w;
     minimumCreatures = minCreatures;
+    stepRate = rate;
+
+    steps = 0;
 }
 
 void Simulation::AddInitialCreature(double initialX, double initialY)
@@ -90,10 +93,16 @@ void Simulation::Step(void)
     // If there are fewer creatures than the minimum, add creatures to pad out.
     int creaturesToAdd = (minimumCreatures - creatures.size()) + (minimumCreatures / 2);
 
-    if (creaturesToAdd > 0) printf("Population below minimum. Injecting new life...\n");
-
     for (int i = 0; i < creaturesToAdd; i++)
     {
         AddInitialCreature(Random::Double(0, world->Width()), Random::Double(0, world->Height()));
     }
+
+    steps++;
+}
+
+unsigned int Simulation::SimulationTime(void)
+{
+    // Divide the number of steps by the rate to get the time in seconds.
+    return steps / stepRate;
 }
