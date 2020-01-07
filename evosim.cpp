@@ -208,7 +208,7 @@ int main(int argc, char * argv[])
                 PrettyTime(runTimeString, totalTime / 1000);
                 PrettyTime(simTimeString, sim->SimulationTime());
 
-                printf("Run time: %s, Simulation time: %s\n", runTimeString, simTimeString);
+                printf("Run time: %s, Simulation time: %s, Population: %u\n", runTimeString, simTimeString, sim->CreatureCount());
                 lastRecordedTime = totalTime / 2000;
             }
 
