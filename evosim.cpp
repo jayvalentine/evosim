@@ -219,9 +219,9 @@ int main(int argc, char * argv[])
             // Because we're working in milliseconds, this becomes 1000/60.
             //
             // We skip this if we're not rendering.
-            if (render && elapsedTime < (1000 / 60))
+            if (render && elapsedTime < (1000 / FPS))
             {
-                unsigned int paddingTime = (1000 / 60) - elapsedTime;
+                unsigned int paddingTime = (1000 / FPS) - elapsedTime;
 
                 // Sleep for the number of milliseconds calculated.
                 std::this_thread::sleep_for(std::chrono::milliseconds(paddingTime));

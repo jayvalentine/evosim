@@ -96,7 +96,7 @@ Creature::StepState Creature::Step(unsigned int rate)
     double spentEnergy = (speed * attributes.maxSpeed) + rotationalSpeed;
 
     // Change size factor accordingly.
-    double changeInSize = (inputEnergy - spentEnergy) / 10;
+    double changeInSize = (inputEnergy - spentEnergy) / 100;
     sizeFactor = changeInSize / attributes.maxSize;
 
     // Giving birth requires 1/10th of size.

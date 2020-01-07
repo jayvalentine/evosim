@@ -1,5 +1,7 @@
 #include "world.h"
 
+#include <stdio.h>
+
 World::World(double w, double h, double t)
 {
     width = w;
@@ -27,6 +29,16 @@ World::World(double w, double h, double t)
 
 void World::Step(unsigned int rate)
 {
+    // Each tile grows by a factor of 1.1 per second.
+    // This means that tiles which have been completely destroyed do not grow at all.
+    for (int x = 0; x < tiles.size(); x++)
+    {
+        for (int y = 0; y < tiles[x].size(); y++)
+        {
+            tiles[x][y] += tiles[x][y] * (0.05 / rate);
+            if (tiles[x][y] > maxFood) tiles[x][y] = maxFood;
+        }
+    }
 }
 
 double World::GetTile(double x, double y)
