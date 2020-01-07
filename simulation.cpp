@@ -30,7 +30,7 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
 
     attr.maxSpeed = Random::Double(1, 50);
 
-    attr.maxSize = Random::Double(1, 100);
+    attr.maxSize = Random::Double(25,  100);
 
     // Create a new shared_ptr for the creature;
     Creature * creature = new Creature(world, initialX, initialY, net, attr, 0);
@@ -65,7 +65,10 @@ void Simulation::AddOffspringCreature(Creature * creature)
     if (attr.blue > 255) attr.blue = 255;
 
     attr.maxSpeed += Random::Double(-5, 5);
+    if (attr.maxSpeed < 1) attr.maxSpeed = 1;
+
     attr.maxSize += Random::Double(-10, 10);
+    if (attr.maxSize < 25) attr.maxSize = 10;
 
     // Create a new shared_ptr for the creature
     Creature * offspring = new Creature(world, creature->GetXPosition(), creature->GetYPosition(), net, attr, creature->Generation() + 1);

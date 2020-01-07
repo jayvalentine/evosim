@@ -12,7 +12,7 @@
 
 // Camera scrolling constants.
 #define CAMERA_ZOOM_FACTOR 2.0
-#define CAMERA_SCROLL_FACTOR CAMERA_MAX_SCALE
+#define CAMERA_SCROLL_FACTOR (CAMERA_MAX_SCALE * 20)
 
 #define CAMERA_MIN_SCALE 0.2
 #define CAMERA_MAX_SCALE 2.0

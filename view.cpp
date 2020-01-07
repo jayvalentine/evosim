@@ -206,6 +206,7 @@ void View::Render(void)
         if (focusCreature->Dead())
         {
             focusCreature.reset();
+            SDL_HideWindow(netWindowReference);
         }
         else
         {
@@ -378,24 +379,32 @@ void View::ZoomOut(void)
 
 void View::PanLeft(void)
 {
+    focusCreature.reset();
+
     cameraX -= PanSpeed();
     if (cameraX < 0.0) cameraX = 0.0;
 }
 
 void View::PanRight(void)
 {
+    focusCreature.reset();
+
     cameraX += PanSpeed();
     if (cameraX > simReference->GetWorld()->Width()) cameraX = simReference->GetWorld()->Width();
 }
 
 void View::PanUp(void)
 {
+    focusCreature.reset();
+
     cameraY -= PanSpeed();
     if (cameraY < 0.0) cameraY = 0.0;
 }
 
 void View::PanDown(void)
 {
+    focusCreature.reset();
+    
     cameraY += PanSpeed();
     if (cameraY > simReference->GetWorld()->Height()) cameraY = simReference->GetWorld()->Height();
 }

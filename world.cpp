@@ -35,7 +35,7 @@ void World::Step(unsigned int rate)
     {
         for (int y = 0; y < tiles[x].size(); y++)
         {
-            tiles[x][y] += tiles[x][y] * (0.05 / rate);
+            tiles[x][y] += tiles[x][y] * (0.005 / rate);
             if (tiles[x][y] > maxFood) tiles[x][y] = maxFood;
         }
     }
