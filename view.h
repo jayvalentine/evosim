@@ -2,6 +2,7 @@
 #define VIEW_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #include <vector>
 #include <memory>
@@ -42,7 +43,10 @@ class View
 
     private:
 
+    void RenderText(const char * text, int x, int y);
+
     void RenderNet(NeuralNetwork * net);
+    void RenderInfo(Creature * creature);
 
     void DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue);
     void FillCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue);
@@ -64,6 +68,9 @@ class View
 
     // Creature we're focusing on.
     std::shared_ptr<Creature> focusCreature;
+
+    // Font used throughout rendering.
+    TTF_Font * font;
 };
 
 #endif // VIEW_H

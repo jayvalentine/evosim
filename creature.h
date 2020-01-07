@@ -35,7 +35,7 @@ class Creature
     };
 
     // Constructor.
-    Creature(World * w, double initialX, double initialY, NeuralNetwork * n);
+    Creature(World * w, double initialX, double initialY, NeuralNetwork * n, int gen);
 
     // Destructor.
     ~Creature();
@@ -46,6 +46,7 @@ class Creature
     StepState Step(void);
 
     // Getters for private properties.
+    int Generation(void) { return generation; }
     double GetXPosition(void) { return x; }
     double GetYPosition(void) { return y; }
 
@@ -60,6 +61,8 @@ class Creature
     Attributes GetAttributes(void) { return attributes; }
 
     private:
+
+    int generation;
 
     Attributes attributes;
 

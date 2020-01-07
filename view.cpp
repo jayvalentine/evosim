@@ -15,6 +15,9 @@ View::View(SDL_Window * window, SDL_Window * netWindow, Simulation * sim, double
     cameraScale = initialScale;
 
     focusCreature = NULL;
+
+    // Globally used font.
+    font = TTF_OpenFont("VeraMono.ttf", 20);
 }
 
 View::~View()
@@ -26,9 +29,6 @@ void View::RenderNet(NeuralNetwork * net)
 {
     // Render the input neurons.
     std::vector<int> inputs = net->Inputs();
-
-    SDL_SetRenderDrawColor(netRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-    SDL_RenderClear(netRenderer);
 
     // First draw the synapses. That way the neurons will be drawn over them.
     std::vector<Synapse *> synapses = net->Synapses();
@@ -52,8 +52,6 @@ void View::RenderNet(NeuralNetwork * net)
     {
         int x = 40;
         int y = 40 + (70 * inputs[i]);
-
-        printf("Drawing Input: %d, %d\n", x, y);
 
         DrawCircle(netRenderer, x, y, 30, 255, 255, 255);
 
@@ -97,8 +95,6 @@ void View::RenderNet(NeuralNetwork * net)
         int x = 360;
         int y = 40 + (70 * (outputs[i] - inputs.size()));
 
-        printf("Drawing Output: %d, %d\n", x, y);
-
         DrawCircle(netRenderer, x, y, 30, 255, 255, 255);
 
         // Determine the colour of the neuron.
@@ -132,8 +128,41 @@ void View::RenderNet(NeuralNetwork * net)
         // Now fill the circle we just drew with the calculated color.
         FillCircle(netRenderer, x, y, 29, red, green, blue);
     }
+}
 
-    SDL_RenderPresent(netRenderer);
+void View::RenderInfo(Creature * creature)
+{
+    const int startPosition = 700;
+
+    char buf[100];
+
+    RenderText("Attributes:", 10, startPosition + 10);
+
+    sprintf(buf, "Generation: %d", creature->Generation());
+
+    RenderText(buf, 10, startPosition + 40);
+}
+
+void View::RenderText(const char * text, int x, int y)
+{
+    SDL_Color textColor = {255, 255, 255};
+
+    SDL_Surface * textSurface = TTF_RenderText_Solid(font, text, textColor);
+
+    SDL_Texture * textTexture = SDL_CreateTextureFromSurface(netRenderer, textSurface);
+
+    // A rectangle of where we want this text to be.
+    SDL_Rect dst;
+    dst.x = x;
+    dst.y = y;
+    dst.w = textSurface->w;
+    dst.h = textSurface->h;
+
+    SDL_RenderCopy(netRenderer, textTexture, NULL, &dst);
+
+    // Free the surface and texture.
+    //free(textSurface);
+    //free(textTexture);
 }
 
 void View::Render(void)
@@ -154,8 +183,16 @@ void View::Render(void)
             // Show the information window.
             SDL_ShowWindow(netWindowReference);
 
+            SDL_SetRenderDrawColor(netRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+            SDL_RenderClear(netRenderer);
+
             // Render the creature's neural net to the information window.
             RenderNet(focusCreature->Net());
+
+            // Render the creature's info to the window.
+            RenderInfo(focusCreature.get());
+
+            SDL_RenderPresent(netRenderer);
         }
     }
     else

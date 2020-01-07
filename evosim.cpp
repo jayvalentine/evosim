@@ -44,14 +44,20 @@ int main(int argc, char * argv[])
         return 1;
     }
 
-    // We've successfully initialized SDL.
+    if (TTF_Init() < 0)
+    {
+        printf("Could not initialize TTF\n");
+        return 1;
+    }
+
+    // We've successfully initialized SDL and TTF.
 
     // Now we'll draw the main window.
     window = SDL_CreateWindow("EvoSim", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
     // This is a window to show the neural network of the selected creature.
     // It's hidden initially.
-    netWindow = SDL_CreateWindow("Selected Creature", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 400, 700, SDL_WINDOW_HIDDEN);
+    netWindow = SDL_CreateWindow("Selected Creature", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 400, 900, SDL_WINDOW_HIDDEN);
 
     SDL_Event e;
 
@@ -189,6 +195,7 @@ int main(int argc, char * argv[])
     // Clean up the window and quit.
     SDL_DestroyWindow(window);
     SDL_Quit();
+    TTF_Quit();
 
     return 0;
 }

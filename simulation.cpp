@@ -19,7 +19,7 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
     }
 
     // Create a new shared_ptr for the creature;
-    Creature * creature = new Creature(world, initialX, initialY, net);
+    Creature * creature = new Creature(world, initialX, initialY, net, 0);
 
     AddCreature(creature);
 }
@@ -38,7 +38,7 @@ void Simulation::AddOffspringCreature(Creature * creature)
     Evolution::Mutate(net);
 
     // Create a new shared_ptr for the creature
-    Creature * offspring = new Creature(world, creature->GetXPosition(), creature->GetYPosition(), net);
+    Creature * offspring = new Creature(world, creature->GetXPosition(), creature->GetYPosition(), net, creature->Generation() + 1);
 
     AddCreature(offspring);
 }

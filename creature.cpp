@@ -1,8 +1,10 @@
 #include "creature.h"
 
 // Constructor.
-Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * n)
+Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * n, int gen)
 {
+    generation = gen;
+
     dead = false;
 
     world = w;
