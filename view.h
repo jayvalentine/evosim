@@ -41,6 +41,7 @@ class View
 
     void SelectFirst(void);
     void SelectLast(void);
+    void SelectHighestGeneration(void);
 
     void HandleClick(int x, int y);
 

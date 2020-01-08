@@ -425,6 +425,21 @@ void View::SelectLast(void)
     focusCreature = simReference->GetCreature(simReference->CreatureCount() - 1);
 }
 
+void View::SelectHighestGeneration(void)
+{
+    std::shared_ptr<Creature> selected = simReference->GetCreature(0);
+
+    for (int i = 1; i < simReference->CreatureCount(); i++)
+    {
+        if (selected && simReference->GetCreature(i)->Generation() > selected->Generation())
+        {
+            selected = simReference->GetCreature(i);
+        }
+    }
+
+    focusCreature = selected;
+}
+
 void View::HandleClick(int x, int y)
 {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);

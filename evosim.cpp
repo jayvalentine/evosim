@@ -172,6 +172,9 @@ int main(int argc, char * argv[])
                         case SDLK_r:
                             render = !render;
                             break;
+                        case SDLK_1:
+                            view->SelectHighestGeneration();
+                            break;
                     }
                 }
 
