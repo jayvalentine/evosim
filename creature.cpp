@@ -44,17 +44,20 @@ Creature::StepState Creature::Step(unsigned int rate)
 
     std::vector<double> inputs = std::vector<double>();
 
-    // Rotational velocity is in rad/s. A direct output of the network, so already normalised by sigmoid function.
-    inputs.push_back(rotationalSpeed * 10 * rate);
-
     // Speed is a direct output of the network, so is already normalised by sigmoid function.
     inputs.push_back(((speed * 2) - 1) * rate);
+
+    // Rotational velocity is in rad/s. A direct output of the network, so already normalised by sigmoid function.
+    inputs.push_back(rotationalSpeed * 10 * rate);
 
     // Tile value is between 0 and max. Divide by max / 2 and subtract 1.
     inputs.push_back((world->GetTile(x, y) / (world->MaximumFoodValue() / 2)) - 1);
 
     // Size factor is between 0 and 1. Double and subtract one.
     inputs.push_back((sizeFactor * 2) - 1);
+
+    // Percentage of lifespan.
+    inputs.push_back(((age / attributes.lifespan) * 2) - 1);
 
     std::vector<double> outputs = net->OutputValues(inputs);
 

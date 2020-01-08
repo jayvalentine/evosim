@@ -13,7 +13,7 @@ Simulation::Simulation(World * w, int minCreatures, unsigned int rate)
 void Simulation::AddInitialCreature(double initialX, double initialY)
 {
     // Create a new neural network for the creature.
-    NeuralNetwork * net = new NeuralNetwork(4, 4);
+    NeuralNetwork * net = new NeuralNetwork(5, 4);
 
     // Initialise the network with 3 random synapses.
     for (int i = 0; i < 3; i++)
@@ -43,7 +43,7 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
 void Simulation::AddOffspringCreature(Creature * creature)
 {
     // Create a new neural network for the creature and copy the synapses of the old one.
-    NeuralNetwork * net = new NeuralNetwork(4, 4);
+    NeuralNetwork * net = new NeuralNetwork(5, 4);
 
     for (auto s : creature->Net()->Synapses())
     {
