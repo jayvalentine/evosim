@@ -6,5 +6,6 @@
 
 namespace Evolution
 {
+    void AddRandomSynapse(NeuralNetwork * net);
     void Mutate(NeuralNetwork * net);
 }

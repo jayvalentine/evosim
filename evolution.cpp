@@ -1,5 +1,38 @@
 #include "evolution.h"
 
+void Evolution::AddRandomSynapse(NeuralNetwork * net)
+{
+    // Get input neurons.
+    std::vector<int> inputs = net->Inputs();
+    std::vector<int> outputs = net->Outputs();
+    std::vector<Synapse *> synapses = net->Synapses();
+
+    bool chosen = false;
+
+    int start;
+    int end;
+
+    // Pick a pair of neurons that do not already have a synapse.
+    while (!chosen) {
+        start = Random::Choice<int>(inputs);
+        end = Random::Choice<int>(outputs);
+
+        // Determine if there exists a synapse with this pair.
+        chosen = true;
+        for (int i = 0; i < synapses.size(); i++)
+        {
+            if (synapses[i]->Start() == start && synapses[i]->End() == end)
+            {
+                chosen = false;
+                break;
+            }
+        }
+    }
+
+    // At this point we've found a valid pair, so add a new synapse.
+    net->AddSynapse(start, end, Random::Double(-1, 1));
+}
+
 void Evolution::Mutate(NeuralNetwork * net)
 {
     // Probabilities:
@@ -11,35 +44,7 @@ void Evolution::Mutate(NeuralNetwork * net)
 
     if (roll < 0.5 && net->Synapses().size() < (net->Inputs().size() * net->Outputs().size()))
     {
-        // Get input neurons.
-        std::vector<int> inputs = net->Inputs();
-        std::vector<int> outputs = net->Outputs();
-        std::vector<Synapse *> synapses = net->Synapses();
-
-        bool chosen = false;
-
-        int start;
-        int end;
-
-        // Pick a pair of neurons that do not already have a synapse.
-        while (!chosen) {
-            start = Random::Choice<int>(inputs);
-            end = Random::Choice<int>(outputs);
-
-            // Determine if there exists a synapse with this pair.
-            chosen = true;
-            for (int i = 0; i < synapses.size(); i++)
-            {
-                if (synapses[i]->Start() == start && synapses[i]->End() == end)
-                {
-                    chosen = false;
-                    break;
-                }
-            }
-        }
-
-        // At this point we've found a valid pair, so add a new synapse.
-        net->AddSynapse(start, end, Random::Double(-1, 1));
+        AddRandomSynapse(net);
     }
     else if (roll < 0.8)
     {

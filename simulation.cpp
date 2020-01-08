@@ -15,10 +15,10 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
     // Create a new neural network for the creature.
     NeuralNetwork * net = new NeuralNetwork(4, 4);
 
-    // Mutate the network a bit.
-    for (int i = 0; i < 5; i++)
+    // Initialise the network with 3 random synapses.
+    for (int i = 0; i < 3; i++)
     {
-        Evolution::Mutate(net);
+        Evolution::AddRandomSynapse(net);
     }
 
     // Create the creature's attributes.
