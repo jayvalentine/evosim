@@ -66,8 +66,8 @@ Creature::StepState Creature::Step(unsigned int rate)
 
     heading += rotationalSpeed;
 
-    if (heading < 0.0) heading = 2.0 + heading;
-    else if (heading > 2.0) heading -= 2.0;
+    if (heading < 0.0) heading = (2.0 * M_PI) + heading;
+    else if (heading > (2.0 * M_PI)) heading -= (2.0 * M_PI) ;
 
     double dx = (speed * attributes.maxSpeed) * cos(heading);
     double dy = (speed * attributes.maxSpeed) * sin(heading);

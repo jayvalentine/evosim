@@ -149,6 +149,10 @@ void View::RenderInfo(Creature * creature)
     sprintf(buf, "Size:       %3.1fm", creature->GetSize());
 
     RenderText(netRenderer, buf, 10, startPosition + 100);
+
+    sprintf(buf, "Heading:    %1.1frad", creature->GetHeading());
+
+    RenderText(netRenderer, buf, 10, startPosition + 130);
 }
 
 void View::RenderText(SDL_Renderer * r, const char * text, int x, int y)
