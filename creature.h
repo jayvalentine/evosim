@@ -49,6 +49,7 @@ class Creature
     int Generation(void) { return generation; }
     double GetXPosition(void) { return x; }
     double GetYPosition(void) { return y; }
+    double GetHeading(void) { return heading; }
 
     double GetSize(void) { return sizeFactor * attributes.maxSize; }
     double GetSpeed(void) { return speed * attributes.maxSpeed; }

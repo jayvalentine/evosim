@@ -511,6 +511,14 @@ void View::DrawCreature(SDL_Renderer * renderer, Creature * creature, double cam
 
     // Now fill the circle.
     FillCircle(renderer, creaturePixelX, creaturePixelY, creaturePixelRadius - edgeThickness, creature->Red(), creature->Green(), creature->Blue());
+
+    // Draw a black line from the creature's centre to the edge.
+    int dx = creaturePixelRadius * cos(creature->GetHeading());
+    int dy = creaturePixelRadius * sin(creature->GetHeading());
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+    SDL_RenderDrawLine(renderer, creaturePixelX, creaturePixelY, creaturePixelX + dx, creaturePixelY + dy);
 }
 
 void View::DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue)
