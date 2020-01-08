@@ -31,7 +31,10 @@ class Creature
         double maxSpeed;
 
         // Maximum size (diameter) in m of the creature.
-        double maxSize; 
+        double maxSize;
+
+        // Lifespan (in seconds) of the creature.
+        double lifespan;
     };
 
     // Constructor.
@@ -53,6 +56,8 @@ class Creature
 
     double GetSize(void) { return sizeFactor * attributes.maxSize; }
     double GetSpeed(void) { return speed * attributes.maxSpeed; }
+
+    double GetAge(void) { return age; }
 
     unsigned int Red(void) { return attributes.red; }
     unsigned int Green(void) { return attributes.green; }
@@ -89,6 +94,9 @@ class Creature
 
     // Number of steps until the creature is ready to reproduce.
     unsigned int reproductionDelay;
+
+    // Age of this creature.
+    double age;
 
     // The world in which this creature exists.
     World * world;

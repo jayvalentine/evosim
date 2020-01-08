@@ -32,6 +32,8 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
 
     attr.maxSize = Random::Double(25,  100);
 
+    attr.lifespan = Random::Double(600, 1800);
+
     // Create a new shared_ptr for the creature;
     Creature * creature = new Creature(world, initialX, initialY, net, attr, 0, stepRate);
 
@@ -69,6 +71,8 @@ void Simulation::AddOffspringCreature(Creature * creature)
 
     attr.maxSize += Random::Double(-10, 10);
     if (attr.maxSize < 25) attr.maxSize = 25;
+
+    // Creature inherits lifespan directly.
 
     // Create a new shared_ptr for the creature
     Creature * offspring = new Creature(world, creature->GetXPosition(), creature->GetYPosition(), net, attr, creature->Generation() + 1, stepRate);

@@ -142,17 +142,21 @@ void View::RenderInfo(Creature * creature)
 
     RenderText(netRenderer, buf, 10, startPosition + 40);
 
-    sprintf(buf, "Speed:      %3.1fm/s", creature->GetSpeed());
+    sprintf(buf, "Age:        %d", (int)creature->GetAge());
 
     RenderText(netRenderer, buf, 10, startPosition + 70);
 
-    sprintf(buf, "Size:       %3.1fm", creature->GetSize());
+    sprintf(buf, "Speed:      %3.1fm/s", creature->GetSpeed());
 
     RenderText(netRenderer, buf, 10, startPosition + 100);
 
-    sprintf(buf, "Heading:    %1.1frad", creature->GetHeading());
+    sprintf(buf, "Size:       %3.1fm", creature->GetSize());
 
     RenderText(netRenderer, buf, 10, startPosition + 130);
+
+    sprintf(buf, "Heading:    %1.1frad", creature->GetHeading());
+
+    RenderText(netRenderer, buf, 10, startPosition + 160);
 }
 
 void View::RenderText(SDL_Renderer * r, const char * text, int x, int y)

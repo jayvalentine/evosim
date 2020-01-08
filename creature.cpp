@@ -16,6 +16,7 @@ Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * 
     rotationalSpeed = 0.0;
     sizeFactor = 0.5;
     reproductionDelay = 360 * rate;
+    age = 0;
 
     attributes = attr;
 
@@ -30,6 +31,13 @@ Creature::~Creature()
 
 Creature::StepState Creature::Step(unsigned int rate)
 {
+    if (age > attributes.lifespan)
+    {
+        dead = true;
+        return DEAD;
+    }
+    else age += 1.0 / rate;
+
     if (reproductionDelay > 0) reproductionDelay--;
 
     StepState state = NO_CHANGE;
