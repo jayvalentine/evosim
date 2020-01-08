@@ -45,7 +45,7 @@ Creature::StepState Creature::Step(unsigned int rate)
     std::vector<double> inputs = std::vector<double>();
 
     // Speed is a direct output of the network, so is already normalised by sigmoid function.
-    inputs.push_back(((speed * 2) - 1) * rate);
+    inputs.push_back((((speed * rate) * 2) - 1));
 
     // Rotational velocity is in rad/s. A direct output of the network, so already normalised by sigmoid function.
     inputs.push_back(rotationalSpeed * 10 * rate);
