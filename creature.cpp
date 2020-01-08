@@ -40,7 +40,7 @@ Creature::StepState Creature::Step(unsigned int rate)
     inputs.push_back(rotationalSpeed * 10 * rate);
 
     // Speed is a direct output of the network, so is already normalised by sigmoid function.
-    inputs.push_back(speed * rate);
+    inputs.push_back(((speed * 2) - 1) * rate);
 
     // Tile value is between 0 and max. Divide by max / 2 and subtract 1.
     inputs.push_back((world->GetTile(x, y) / (world->MaximumFoodValue() / 2)) - 1);
@@ -61,7 +61,7 @@ Creature::StepState Creature::Step(unsigned int rate)
 
     // Change speed and heading according to network.
     // These values need to be scaled down.
-    speed = outputs[0] / rate;
+    speed = ((outputs[0] + 1) / 2) / rate;
     rotationalSpeed = (outputs[1] / 10) / rate;
 
     heading += rotationalSpeed;
