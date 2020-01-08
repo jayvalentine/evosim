@@ -1,7 +1,7 @@
 #include "creature.h"
 
 // Constructor.
-Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * n, Attributes attr, int gen)
+Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * n, Attributes attr, int gen, unsigned int rate)
 {
     generation = gen;
 
@@ -14,7 +14,8 @@ Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * 
     heading = 0.0;
     speed = 0.0;
     rotationalSpeed = 0.0;
-    sizeFactor = 1.0;
+    sizeFactor = 0.5;
+    reproductionDelay = 360 * rate;
 
     attributes = attr;
 
@@ -29,6 +30,8 @@ Creature::~Creature()
 
 Creature::StepState Creature::Step(unsigned int rate)
 {
+    if (reproductionDelay > 0) reproductionDelay--;
+
     StepState state = NO_CHANGE;
 
     std::vector<double> inputs = std::vector<double>();
@@ -79,8 +82,14 @@ Creature::StepState Creature::Step(unsigned int rate)
     else if (y < 0.0) y = world->Height() + y;
 
     // Desire to give birth is output 3.
-    // If above 0.75, the creature may give birth.
-    if (outputs[3] >= 0.75) state = GIVE_BIRTH;
+    // If above 0, the creature may give birth.
+    if (outputs[3] >= 0 && reproductionDelay == 0) 
+    {
+        state = GIVE_BIRTH;
+
+        // Creature cannot give birth again for a minute.
+        reproductionDelay = 60 * rate;
+    }
 
     // Calculate energy used.
 
@@ -93,11 +102,11 @@ Creature::StepState Creature::Step(unsigned int rate)
     double changeInSize = (inputEnergy - spentEnergy) / 100;
     sizeFactor += changeInSize / attributes.maxSize;
 
-    // Giving birth requires 1/10th of size.
-    if (state == GIVE_BIRTH) sizeFactor -= 0.1;
+    // Giving birth requires 1/2 of size.
+    if (state == GIVE_BIRTH) sizeFactor -= 0.5;
 
-    // If size factor < 0.1, the creature is dead.
-    if (sizeFactor < 0.1)
+    // If size factor < 0.3, the creature is dead.
+    if (sizeFactor < 0.3)
     {
         dead = true;
         state = DEAD;

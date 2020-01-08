@@ -35,7 +35,7 @@ class Creature
     };
 
     // Constructor.
-    Creature(World * w, double initialX, double initialY, NeuralNetwork * n, Attributes attr, int gen);
+    Creature(World * w, double initialX, double initialY, NeuralNetwork * n, Attributes attr, int gen, unsigned int rate);
 
     // Destructor.
     ~Creature();
@@ -85,6 +85,9 @@ class Creature
 
     // Speed (in m/s) of this creature.
     double speed;
+
+    // Number of steps until the creature is ready to reproduce.
+    unsigned int reproductionDelay;
 
     // The world in which this creature exists.
     World * world;
