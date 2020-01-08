@@ -11,7 +11,7 @@ Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * 
 
     x = initialX;
     y = initialY;
-    heading = 0.0;
+    heading = Random::Double(0, 2);
     speed = 0.0;
     rotationalSpeed = 0.0;
     sizeFactor = 0.5;
@@ -83,7 +83,7 @@ Creature::StepState Creature::Step(unsigned int rate)
 
     // Desire to give birth is output 3.
     // If above 0, the creature may give birth.
-    if (outputs[3] >= 0 && reproductionDelay == 0) 
+    if (outputs[3] > 0 && reproductionDelay == 0) 
     {
         state = GIVE_BIRTH;
 
@@ -99,7 +99,7 @@ Creature::StepState Creature::Step(unsigned int rate)
     double spentEnergy = (speed * attributes.maxSpeed) + rotationalSpeed + (sizeFactor * attributes.maxSize);
 
     // Change size factor accordingly.
-    double changeInSize = (inputEnergy - spentEnergy) / 100;
+    double changeInSize = (inputEnergy - spentEnergy) / 500;
     sizeFactor += changeInSize / attributes.maxSize;
 
     // Giving birth requires 1/2 of size.
