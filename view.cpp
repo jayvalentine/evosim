@@ -38,11 +38,11 @@ void View::RenderNet(NeuralNetwork * net)
         // From an input to an output.
         Synapse * s = synapses[i];
 
-        int startX = 40;
-        int endX = 360;
+        int startX = 25;
+        int endX = 375;
 
-        int startY = 40 + (70 * s->Start());
-        int endY = 40 + (70 * (s->End() - inputs.size()));
+        int startY = 25 + (35 * s->Start());
+        int endY = 25 + (35 * (s->End() - inputs.size()));
 
         SDL_SetRenderDrawColor(netRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawLine(netRenderer, startX, startY, endX, endY);
@@ -50,10 +50,10 @@ void View::RenderNet(NeuralNetwork * net)
 
     for (int i = 0; i < inputs.size(); i++)
     {
-        int x = 40;
-        int y = 40 + (70 * inputs[i]);
+        int x = 25;
+        int y = 25 + (35 * inputs[i]);
 
-        DrawCircle(netRenderer, x, y, 30, 255, 255, 255);
+        DrawCircle(netRenderer, x, y, 15, 255, 255, 255);
 
         // Determine the colour of the neuron.
         // Red if the neuron is negative,
@@ -84,7 +84,7 @@ void View::RenderNet(NeuralNetwork * net)
         }
 
         // Now fill the circle we just drew with the calculated color.
-        FillCircle(netRenderer, x, y, 29, red, green, blue);
+        FillCircle(netRenderer, x, y, 14, red, green, blue);
     }
 
     // Now draw the output neurons.
@@ -92,10 +92,10 @@ void View::RenderNet(NeuralNetwork * net)
 
     for (int i = 0; i < outputs.size(); i++)
     {
-        int x = 360;
-        int y = 40 + (70 * (outputs[i] - inputs.size()));
+        int x = 375;
+        int y = 25 + (35 * (outputs[i] - inputs.size()));
 
-        DrawCircle(netRenderer, x, y, 30, 255, 255, 255);
+        DrawCircle(netRenderer, x, y, 15, 255, 255, 255);
 
         // Determine the colour of the neuron.
         // Red if the neuron is negative,
@@ -126,7 +126,7 @@ void View::RenderNet(NeuralNetwork * net)
         }
 
         // Now fill the circle we just drew with the calculated color.
-        FillCircle(netRenderer, x, y, 29, red, green, blue);
+        FillCircle(netRenderer, x, y, 14, red, green, blue);
     }
 }
 
