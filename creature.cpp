@@ -59,6 +59,19 @@ Creature::StepState Creature::Step(unsigned int rate)
     // Percentage of lifespan.
     inputs.push_back(((age / attributes.lifespan) * 2) - 1);
 
+    // Value of tile at sight-point.
+    double sightDistance = (GetSize() / 2) + 50;
+    double sightPointX = x + (sightDistance * cos(heading));
+    double sightPointY = y + (sightDistance * sin(heading));
+
+    if (sightPointX >= world->Width()) sightPointX -= world->Width();
+    else if (sightPointX < 0) sightPointX = world->Width() + sightPointX;
+
+    if (sightPointY >= world->Height()) sightPointY -= world->Height();
+    else if (sightPointY < 0) sightPointY = world->Height() + sightPointY;
+
+    inputs.push_back((world->GetTile(sightPointX, sightPointY) / (world->MaximumFoodValue() / 2)) - 1);
+
     std::vector<double> outputs = net->OutputValues(inputs);
 
     double feedFactor = (outputs[2] + 1.0) / 10.0;
