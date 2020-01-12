@@ -535,6 +535,10 @@ void View::DrawCreature(SDL_Renderer * renderer, Creature * creature, double cam
     // Now fill the circle.
     FillCircle(renderer, creaturePixelX, creaturePixelY, creaturePixelRadius - edgeThickness, creature->Red(), creature->Green(), creature->Blue());
 
+    // These elements look terrible at small scales, so only draw them if scale > 0.3.
+    // This will also improve performance at those small scales.
+    if (cameraScale <= 0.3) return;
+
     // Draw a black line from the creature's centre to the edge.
     int dx = creaturePixelRadius * cos(creature->GetHeading());
     int dy = creaturePixelRadius * sin(creature->GetHeading());
