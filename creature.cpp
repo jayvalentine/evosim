@@ -50,8 +50,14 @@ Creature::StepState Creature::Step(unsigned int rate)
     // Rotational velocity is in rad/s. A direct output of the network, so already normalised by sigmoid function.
     inputs.push_back(rotationalSpeed * 10 * rate);
 
-    // Tile value is between 0 and max. Divide by max / 2 and subtract 1.
-    inputs.push_back((world->GetTile(x, y)->Food() / (World::Tile::MaximumFoodValue / 2)) - 1);
+    // Tile colour. Each value is 0-255. Divide by 255/2 and subtract 1.
+    double red = (world->GetTile(x, y)->Red() / 127.5) - 1;
+    double green = (world->GetTile(x, y)->Green() / 127.5) - 1;
+    double blue = (world->GetTile(x, y)->Blue() / 127.5) - 1;
+
+    inputs.push_back(red);
+    inputs.push_back(green);
+    inputs.push_back(blue);
 
     // Size factor is between 0 and 1. Double and subtract one.
     inputs.push_back((sizeFactor * 2) - 1);
@@ -70,7 +76,14 @@ Creature::StepState Creature::Step(unsigned int rate)
     if (sightPointY >= world->Height()) sightPointY -= world->Height();
     else if (sightPointY < 0) sightPointY = world->Height() + sightPointY;
 
-    inputs.push_back((world->GetTile(sightPointX, sightPointY)->Food() / (World::Tile::MaximumFoodValue / 2)) - 1);
+    // Tile colour. Each value is 0-255. Divide by 255/2 and subtract 1.
+    double seenRed = (world->GetTile(sightPointX, sightPointY)->Red() / 127.5) - 1;
+    double seenGreen = (world->GetTile(sightPointX, sightPointY)->Green() / 127.5) - 1;
+    double seenBlue = (world->GetTile(sightPointX, sightPointY)->Blue() / 127.5) - 1;
+
+    inputs.push_back(seenRed);
+    inputs.push_back(seenGreen);
+    inputs.push_back(seenBlue);
 
     std::vector<double> outputs = net->OutputValues(inputs);
 
