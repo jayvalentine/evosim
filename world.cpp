@@ -27,7 +27,8 @@ double World::Tile::ReduceByPercentage(double percentage)
 
 unsigned char World::Tile::Red(void) const
 {
-    return 100;
+    if (type == GRASS) return 100;
+    else return 0;
 }
 
 unsigned char World::Tile::Green(void) const
@@ -37,7 +38,8 @@ unsigned char World::Tile::Green(void) const
 
 unsigned char World::Tile::Blue(void) const
 {
-    return 100;
+    if (type == GRASS) return 100;
+    else return 150 + (int)((food / MaximumFoodValue) * 105);
 }
 
 World::World(double w, double h, double t)
@@ -47,20 +49,55 @@ World::World(double w, double h, double t)
 
     tileSize = t;
 
-    tiles = std::vector<std::vector<Tile *>>();
+    std::vector<std::vector<TileType>> tileTypes = std::vector<std::vector<TileType>>();
 
     // Calculate number of tiles per row and column.
     int tilesPerRow = (int) (width / tileSize);
     int tilesPerColumn = (int) (height / tileSize);
 
-    // Initialize tiles.
+    // Determine the type of each tile. Initially, all tiles are water.
     for (int x = 0; x < tilesPerRow; x++)
+    {
+        tileTypes.push_back(std::vector<TileType>());
+
+        for (int y = 0; y < tilesPerColumn; y++)
+        {
+            tileTypes[x].push_back(WATER);
+        }
+    }
+
+    // Create landmasses using a "drunken man" method.
+    // Start in a random point, and for 200 'turns', 'walk' in a random direction.
+    for (int i = 0; i < 10; i++)
+    {
+        int x = Random::Int(0, tileTypes.size());
+        int y = Random::Int(0, tileTypes[x].size());
+
+        for (int t = 0; t < 500; t++)
+        {
+            tileTypes[x][y] = GRASS;
+
+            x += Random::Int(-1, 1);
+            y += Random::Int(-1, 1);
+
+            if (x < 0) x = tileTypes.size() - 1;
+            else if (x >= tileTypes.size()) x = 0;
+
+            if (y < 0) y = tileTypes[0].size() - 1;
+            else if (y >= tileTypes[0].size()) y = 0;
+        }
+    }
+
+    // Now initialize the actual tile objects.
+    tiles = std::vector<std::vector<Tile *>>();
+
+    for (int x = 0; x < tileTypes.size(); x++)
     {
         tiles.push_back(std::vector<Tile *>());
 
-        for (int y = 0; y < tilesPerRow; y++)
+        for (int y = 0; y < tileTypes[x].size(); y++)
         {
-            tiles[x].push_back(new Tile(GRASS, Random::Double(0, Tile::MaximumFoodValue)));
+            tiles[x].push_back(new Tile(tileTypes[x][y], Random::Double(0, Tile::MaximumFoodValue)));
         }
     }
 }
