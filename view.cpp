@@ -542,6 +542,18 @@ void View::DrawCreature(SDL_Renderer * renderer, Creature * creature, double cam
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
     SDL_RenderDrawLine(renderer, creaturePixelX, creaturePixelY, creaturePixelX + dx, creaturePixelY + dy);
+
+    int sightPixelDistance = 50 * cameraScale;
+
+    int startX = creaturePixelX + dx;
+    int startY = creaturePixelY + dy;
+
+    int endX = startX + (sightPixelDistance * cos(creature->GetHeading()));
+    int endY = startY + (sightPixelDistance * sin(creature->GetHeading()));
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+
+    SDL_RenderDrawLine(renderer, startX, startY, endX, endY);
 }
 
 void View::DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue)
