@@ -20,6 +20,13 @@ class Creature
         DEAD
     };
 
+    enum BreathingType
+    {
+        LAND,
+        WATER,
+        BOTH
+    };
+
     struct Attributes
     {
         // Colour in RGB format.
@@ -38,6 +45,9 @@ class Creature
 
         // Sight distance in m of the creature.
         double sightDistance;
+
+        // Breathing capability of this creature.
+        BreathingType breathing;
     };
 
     // Constructor.

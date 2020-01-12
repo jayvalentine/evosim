@@ -11,7 +11,7 @@ class World
 
     enum TileType
     {
-        GRASS,
+        LAND,
         WATER
     };
 
@@ -31,6 +31,7 @@ class World
         unsigned char Green(void) const;
         unsigned char Blue(void) const;
 
+        TileType Type(void) const { return type; }
         double Food(void) const { return food; }
 
         private:

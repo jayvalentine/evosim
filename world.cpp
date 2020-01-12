@@ -27,7 +27,7 @@ double World::Tile::ReduceByPercentage(double percentage)
 
 unsigned char World::Tile::Red(void) const
 {
-    if (type == GRASS) return 100;
+    if (type == LAND) return 100;
     else return 0;
 }
 
@@ -38,7 +38,7 @@ unsigned char World::Tile::Green(void) const
 
 unsigned char World::Tile::Blue(void) const
 {
-    if (type == GRASS) return 100;
+    if (type == LAND) return 100;
     else return 150 + (int)((food / MaximumFoodValue) * 105);
 }
 
@@ -75,7 +75,7 @@ World::World(double w, double h, double t)
 
         for (int t = 0; t < 500; t++)
         {
-            tileTypes[x][y] = GRASS;
+            tileTypes[x][y] = LAND;
 
             x += Random::Int(-1, 1);
             y += Random::Int(-1, 1);

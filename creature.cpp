@@ -135,6 +135,13 @@ Creature::StepState Creature::Step(unsigned int rate)
     // Both are already scaled.
     double spentEnergy = (speed * attributes.maxSpeed) + rotationalSpeed + (sizeFactor * attributes.maxSize);
 
+    // A creature in an environment in which it cannot breathe dies quickly.
+    if ((attributes.breathing == WATER && world->GetTile(x, y)->Type() == World::TileType::LAND)
+        || (attributes.breathing == LAND && world->GetTile(x, y)->Type() == World::TileType::WATER))
+    {
+        sizeFactor -= 0.01;
+    }
+
     // Change size factor accordingly.
     double changeInSize = (inputEnergy - spentEnergy) / 500;
     sizeFactor += changeInSize / attributes.maxSize;
