@@ -51,7 +51,7 @@ Creature::StepState Creature::Step(unsigned int rate)
     inputs.push_back(rotationalSpeed * 10 * rate);
 
     // Tile value is between 0 and max. Divide by max / 2 and subtract 1.
-    inputs.push_back((world->GetTile(x, y) / (world->MaximumFoodValue() / 2)) - 1);
+    inputs.push_back((world->GetTile(x, y)->Food() / (World::Tile::MaximumFoodValue / 2)) - 1);
 
     // Size factor is between 0 and 1. Double and subtract one.
     inputs.push_back((sizeFactor * 2) - 1);
@@ -70,7 +70,7 @@ Creature::StepState Creature::Step(unsigned int rate)
     if (sightPointY >= world->Height()) sightPointY -= world->Height();
     else if (sightPointY < 0) sightPointY = world->Height() + sightPointY;
 
-    inputs.push_back((world->GetTile(sightPointX, sightPointY) / (world->MaximumFoodValue() / 2)) - 1);
+    inputs.push_back((world->GetTile(sightPointX, sightPointY)->Food() / (World::Tile::MaximumFoodValue / 2)) - 1);
 
     std::vector<double> outputs = net->OutputValues(inputs);
 
@@ -78,7 +78,7 @@ Creature::StepState Creature::Step(unsigned int rate)
 
     // Feeding factor is 0.1. The creature consumes 10% of the food in the tile it's on.
     // Scale down because this is per-step, and the feeding rate is per-second.
-    double food = world->ReduceTileByPercentage(x, y, feedFactor / rate);
+    double food = world->GetTile(x, y)->ReduceByPercentage(feedFactor / rate);
 
     // Input energy is a proportion of food. Some is wasted.
     double inputEnergy = (food * 0.8);

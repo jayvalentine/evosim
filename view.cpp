@@ -305,7 +305,7 @@ void View::Render(void)
 
             if (tileBottomPixels >= height) tileBottomPixels = height - 1;
 
-            double tileValue = simReference->GetWorld()->GetTile(realX, realY);
+            World::Tile * tile = simReference->GetWorld()->GetTile(realX, realY);
 
             if (tileBottomPixels < viewY) 
             {
@@ -313,21 +313,19 @@ void View::Render(void)
                 continue;
             }
 
-            unsigned int green = 100 + (int)((tileValue / simReference->GetWorld()->MaximumFoodValue()) * 155);
-
             // Create a rectangle for this tile.
-            SDL_Rect tile;
+            SDL_Rect displayTile;
 
-            tile.x = viewX;
-            tile.y = viewY;
-            tile.w = (tileRightPixels - viewX);
-            tile.h = (tileBottomPixels - viewY);
+            displayTile.x = viewX;
+            displayTile.y = viewY;
+            displayTile.w = (tileRightPixels - viewX);
+            displayTile.h = (tileBottomPixels - viewY);
 
-            SDL_SetRenderDrawColor(renderer, 100, green, 100, SDL_ALPHA_OPAQUE);
-            SDL_RenderFillRect(renderer, &tile);
+            SDL_SetRenderDrawColor(renderer, tile->Red(), tile->Green(), tile->Blue(), SDL_ALPHA_OPAQUE);
+            SDL_RenderFillRect(renderer, &displayTile);
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-            SDL_RenderDrawRect(renderer, &tile);
+            SDL_RenderDrawRect(renderer, &displayTile);
 
             // Now move onto the next tile.
             
