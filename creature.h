@@ -35,6 +35,9 @@ class Creature
 
         // Lifespan (in seconds) of the creature.
         double lifespan;
+
+        // Sight distance in m of the creature.
+        double sightDistance;
     };
 
     // Constructor.

@@ -543,7 +543,7 @@ void View::DrawCreature(SDL_Renderer * renderer, Creature * creature, double cam
 
     SDL_RenderDrawLine(renderer, creaturePixelX, creaturePixelY, creaturePixelX + dx, creaturePixelY + dy);
 
-    int sightPixelDistance = 50 * cameraScale;
+    int sightPixelDistance = creature->GetAttributes().sightDistance * cameraScale;
 
     int startX = creaturePixelX + dx;
     int startY = creaturePixelY + dy;

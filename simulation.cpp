@@ -34,6 +34,8 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
 
     attr.lifespan = Random::Double(600, 1800);
 
+    attr.sightDistance = Random::Double(100, 300);
+
     // Create a new shared_ptr for the creature;
     Creature * creature = new Creature(world, initialX, initialY, net, attr, 0, stepRate);
 
@@ -73,6 +75,10 @@ void Simulation::AddOffspringCreature(Creature * creature)
     if (attr.maxSize < 25) attr.maxSize = 25;
 
     // Creature inherits lifespan directly.
+
+    attr.sightDistance += Random::Double(-25, 25);
+    if (attr.sightDistance < 0) attr.sightDistance = 0;
+    else if (attr.sightDistance > 700) attr.sightDistance = 700;
 
     // Create a new shared_ptr for the creature
     Creature * offspring = new Creature(world, creature->GetXPosition(), creature->GetYPosition(), net, attr, creature->Generation() + 1, stepRate);

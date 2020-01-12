@@ -60,7 +60,7 @@ Creature::StepState Creature::Step(unsigned int rate)
     inputs.push_back(((age / attributes.lifespan) * 2) - 1);
 
     // Value of tile at sight-point.
-    double sightDistance = (GetSize() / 2) + 50;
+    double sightDistance = (GetSize() / 2) + attributes.sightDistance;
     double sightPointX = x + (sightDistance * cos(heading));
     double sightPointY = y + (sightDistance * sin(heading));
 
