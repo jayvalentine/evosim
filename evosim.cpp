@@ -146,33 +146,43 @@ int main(int argc, char * argv[])
                     switch (e.key.keysym.sym)
                     {
                         case SDLK_DOWN:
+                            printf("Pan down\n");
                             view->PanDown();
                             break;
                         case SDLK_UP:
+                            printf("Pan up\n");
                             view->PanUp();
                             break;
                         case SDLK_LEFT:
+                            printf("Pan left\n");
                             view->PanLeft();
                             break;
                         case SDLK_RIGHT:
+                            printf("Pan right\n");
                             view->PanRight();
                             break;
                         case SDLK_EQUALS:
+                            printf("Zoom in\n");
                             view->ZoomIn();
                             break;
                         case SDLK_MINUS:
+                            printf("Zoom out\n");
                             view->ZoomOut();
                             break;
                         case SDLK_SPACE:
+                            printf("Select first creature\n");
                             view->SelectFirst();
                             break;
                         case SDLK_BACKSPACE:
+                            printf("Select last creature\n");
                             view->SelectLast();
                             break;
                         case SDLK_r:
+                            printf("Toggle rendering\n");
                             render = !render;
                             break;
                         case SDLK_1:
+                            printf("Select latest generation creature\n");
                             view->SelectHighestGeneration();
                             break;
                     }
