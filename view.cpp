@@ -134,29 +134,52 @@ void View::RenderInfo(Creature * creature)
 {
     const int startPosition = 700;
 
+    const int leftColumn = 10;
+    const int rightColumn = 310;
+
     char buf[100];
 
-    RenderText(netRenderer, "Attributes:", 10, startPosition + 10);
+    RenderText(netRenderer, "Attributes:", leftColumn, startPosition + 10);
 
     sprintf(buf, "Generation: %d", creature->Generation());
 
-    RenderText(netRenderer, buf, 10, startPosition + 40);
+    RenderText(netRenderer, buf, leftColumn, startPosition + 40);
 
     sprintf(buf, "Age:        %d", (int)creature->GetAge());
 
-    RenderText(netRenderer, buf, 10, startPosition + 70);
+    RenderText(netRenderer, buf, leftColumn, startPosition + 70);
 
     sprintf(buf, "Speed:      %3.1fm/s", creature->GetSpeed());
 
-    RenderText(netRenderer, buf, 10, startPosition + 100);
+    RenderText(netRenderer, buf, leftColumn, startPosition + 100);
 
     sprintf(buf, "Size:       %3.1fm", creature->GetSize());
 
-    RenderText(netRenderer, buf, 10, startPosition + 130);
+    RenderText(netRenderer, buf, leftColumn, startPosition + 130);
 
     sprintf(buf, "Heading:    %1.1frad", creature->GetHeading());
 
-    RenderText(netRenderer, buf, 10, startPosition + 160);
+    RenderText(netRenderer, buf, leftColumn, startPosition + 160);
+
+    char breathing[100];
+
+    if (creature->GetAttributes().breathing == Creature::BreathingType::LAND)
+    {
+        sprintf(breathing, "Terrestrial");
+    }
+    else if (creature->GetAttributes().breathing == Creature::BreathingType::WATER)
+    {
+        sprintf(breathing, "Aquatic");
+    }
+    else
+    {
+        sprintf(breathing, "Amphibious");
+    }
+
+    sprintf(buf, "Affinity:   %s", breathing);
+
+    RenderText(netRenderer, buf, rightColumn, startPosition + 10);
+    
 }
 
 void View::RenderText(SDL_Renderer * r, const char * text, int x, int y)

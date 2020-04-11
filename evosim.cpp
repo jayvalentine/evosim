@@ -66,7 +66,7 @@ int main(int argc, char * argv[])
 
     // This is a window to show the neural network of the selected creature.
     // It's hidden initially.
-    netWindow = SDL_CreateWindow("Selected Creature", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 400, 900, SDL_WINDOW_HIDDEN);
+    netWindow = SDL_CreateWindow("Selected Creature", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 900, SDL_WINDOW_HIDDEN);
 
     SDL_Event e;
 

@@ -139,7 +139,7 @@ Creature::StepState Creature::Step(unsigned int rate)
     if ((attributes.breathing == WATER && world->GetTile(x, y)->Type() == World::TileType::LAND)
         || (attributes.breathing == LAND && world->GetTile(x, y)->Type() == World::TileType::WATER))
     {
-        sizeFactor -= 0.01;
+        sizeFactor -= 0.05;
     }
 
     // Change size factor accordingly.
