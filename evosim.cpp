@@ -186,12 +186,15 @@ int main(int argc, char * argv[])
                             view->SelectHighestGeneration();
                             break;
                     }
+
+                    printf("X: %.2f Y: %.2f\n", view->XCoordinate(), view->YCoordinate());
                 }
 
                 else if (e.type == SDL_MOUSEBUTTONDOWN)
                 {
                     if (e.button.button == SDL_BUTTON_LEFT)
                     {
+                        printf("Left click event\n");
                         view->HandleClick(e.button.x, e.button.y);
                     }
                 }

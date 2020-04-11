@@ -39,6 +39,14 @@ class View
     void PanUp(void);
     void PanDown(void);
 
+    double XCoordinate(void);
+    double YCoordinate(void);
+
+    double CameraLeft(void);
+    double CameraRight(void);
+    double CameraTop(void);
+    double CameraBottom(void);
+
     void SelectFirst(void);
     void SelectLast(void);
     void SelectHighestGeneration(void);

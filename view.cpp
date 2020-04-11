@@ -388,7 +388,7 @@ void View::PanLeft(void)
     focusCreature.reset();
 
     cameraX -= PanSpeed();
-    if (cameraX < 0.0) cameraX = 0.0;
+    if (CameraLeft() < 0.0) cameraX += PanSpeed();
 }
 
 void View::PanRight(void)
@@ -396,7 +396,7 @@ void View::PanRight(void)
     focusCreature.reset();
 
     cameraX += PanSpeed();
-    if (cameraX > simReference->GetWorld()->Width()) cameraX = simReference->GetWorld()->Width();
+    if (CameraRight() > simReference->GetWorld()->Width()) cameraX -= PanSpeed();
 }
 
 void View::PanUp(void)
@@ -404,7 +404,7 @@ void View::PanUp(void)
     focusCreature.reset();
 
     cameraY -= PanSpeed();
-    if (cameraY < 0.0) cameraY = 0.0;
+    if (CameraTop() < 0.0) cameraY += PanSpeed();
 }
 
 void View::PanDown(void)
@@ -412,7 +412,69 @@ void View::PanDown(void)
     focusCreature.reset();
     
     cameraY += PanSpeed();
-    if (cameraY > simReference->GetWorld()->Height()) cameraY = simReference->GetWorld()->Height();
+    if (CameraBottom() > simReference->GetWorld()->Height()) cameraY -= PanSpeed();
+}
+
+double View::XCoordinate(void)
+{
+    return cameraX;
+}
+
+double View::YCoordinate(void)
+{
+    return cameraY;
+}
+
+double View::CameraLeft(void)
+{
+    int width;
+    int height;
+
+    SDL_GetRendererOutputSize(renderer, &width, &height);
+
+    double cameraWidth = width / cameraScale;
+    double cameraLeft = cameraX - (cameraWidth / 2);
+
+    return cameraLeft;
+}
+
+double View::CameraRight(void)
+{
+    int width;
+    int height;
+
+    SDL_GetRendererOutputSize(renderer, &width, &height);
+
+    double cameraWidth = width / cameraScale;
+    double cameraRight = cameraX + (cameraWidth / 2);
+
+    return cameraRight;
+}
+
+double View::CameraTop(void)
+{
+    int width;
+    int height;
+
+    SDL_GetRendererOutputSize(renderer, &width, &height);
+
+    double cameraHeight = height / cameraScale;
+    double cameraTop = cameraY - (cameraHeight / 2);
+
+    return cameraTop;
+}
+
+double View::CameraBottom(void)
+{
+    int width;
+    int height;
+
+    SDL_GetRendererOutputSize(renderer, &width, &height);
+
+    double cameraHeight = height / cameraScale;
+    double cameraBottom = cameraY + (cameraHeight / 2);
+
+    return cameraBottom;
 }
 
 void View::SelectFirst(void)
@@ -462,7 +524,8 @@ void View::HandleClick(int x, int y)
 
     // Now we can determine the boundaries of the camera in metres, and so
     // work out what we can display.
-    double cameraLeft = cameraX - (cameraWidth / 2);
+    double cameraLeft = CameraLeft();
+
     if (cameraLeft < 0.0) cameraLeft = 0.0;
     else if (cameraLeft > (simReference->GetWorld()->Width() - cameraWidth)) cameraLeft = simReference->GetWorld()->Width() - cameraWidth;
 
