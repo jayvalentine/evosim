@@ -14,7 +14,7 @@ namespace Random
 
     // Template function defined in header.
     template<class T> T Choice(std::vector<T> options);
-};
+}
 
 template <class T> T Random::Choice(std::vector<T> options)
 {

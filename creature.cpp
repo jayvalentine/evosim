@@ -48,7 +48,7 @@ Creature::StepState Creature::Step(unsigned int rate)
     inputs.push_back((((speed * rate) * 2) - 1));
 
     // Rotational velocity is in rad/s. A direct output of the network, so already normalised by sigmoid function.
-    inputs.push_back(rotationalSpeed * 10 * rate);
+    inputs.push_back(rotationalSpeed * rate);
 
     // Tile colour. Each value is 0-255. Divide by 255/2 and subtract 1.
     double red = (world->GetTile(x, y)->Red() / 127.5) - 1;
@@ -67,23 +67,44 @@ Creature::StepState Creature::Step(unsigned int rate)
 
     // Value of tile at sight-point.
     double sightDistance = (GetSize() / 2) + attributes.sightDistance;
-    double sightPointX = x + (sightDistance * cos(heading));
-    double sightPointY = y + (sightDistance * sin(heading));
 
-    if (sightPointX >= world->Width()) sightPointX -= world->Width();
-    else if (sightPointX < 0) sightPointX = world->Width() + sightPointX;
+    // Left sight-point.
+    double sightPointA_X = x + (sightDistance * cos(heading - 0.52));
+    double sightPointA_Y = y + (sightDistance * sin(heading - 0.52));
 
-    if (sightPointY >= world->Height()) sightPointY -= world->Height();
-    else if (sightPointY < 0) sightPointY = world->Height() + sightPointY;
+    if (sightPointA_X >= world->Width()) sightPointA_X -= world->Width();
+    else if (sightPointA_X < 0) sightPointA_X = world->Width() + sightPointA_X;
+
+    if (sightPointA_Y >= world->Height()) sightPointA_Y -= world->Height();
+    else if (sightPointA_Y < 0) sightPointA_Y = world->Height() + sightPointA_Y;
 
     // Tile colour. Each value is 0-255. Divide by 255/2 and subtract 1.
-    double seenRed = (world->GetTile(sightPointX, sightPointY)->Red() / 127.5) - 1;
-    double seenGreen = (world->GetTile(sightPointX, sightPointY)->Green() / 127.5) - 1;
-    double seenBlue = (world->GetTile(sightPointX, sightPointY)->Blue() / 127.5) - 1;
+    double seenRed_A = (world->GetTile(sightPointA_X, sightPointA_Y)->Red() / 127.5) - 1;
+    double seenGreen_A = (world->GetTile(sightPointA_X, sightPointA_Y)->Green() / 127.5) - 1;
+    double seenBlue_A = (world->GetTile(sightPointA_X, sightPointA_Y)->Blue() / 127.5) - 1;
 
-    inputs.push_back(seenRed);
-    inputs.push_back(seenGreen);
-    inputs.push_back(seenBlue);
+    inputs.push_back(seenRed_A);
+    inputs.push_back(seenGreen_A);
+    inputs.push_back(seenBlue_A);
+
+    // Right sight-point.
+    double sightPointB_X = x + (sightDistance * cos(heading + 0.52));
+    double sightPointB_Y = y + (sightDistance * sin(heading + 0.52));
+
+    if (sightPointB_X >= world->Width()) sightPointB_X -= world->Width();
+    else if (sightPointB_X < 0) sightPointB_X = world->Width() + sightPointB_X;
+
+    if (sightPointB_Y >= world->Height()) sightPointB_Y -= world->Height();
+    else if (sightPointB_Y < 0) sightPointB_Y = world->Height() + sightPointB_Y;
+
+    // Tile colour. Each value is 0-255. Divide by 255/2 and subtract 1.
+    double seenRed_B = (world->GetTile(sightPointB_X, sightPointB_Y)->Red() / 127.5) - 1;
+    double seenGreen_B = (world->GetTile(sightPointB_X, sightPointB_Y)->Green() / 127.5) - 1;
+    double seenBlue_B = (world->GetTile(sightPointB_X, sightPointB_Y)->Blue() / 127.5) - 1;
+
+    inputs.push_back(seenRed_B);
+    inputs.push_back(seenGreen_B);
+    inputs.push_back(seenBlue_B);
 
     std::vector<double> outputs = net->OutputValues(inputs);
 
@@ -99,7 +120,9 @@ Creature::StepState Creature::Step(unsigned int rate)
     // Change speed and heading according to network.
     // These values need to be scaled down.
     speed = ((outputs[0] + 1) / 2) / rate;
-    rotationalSpeed = (outputs[1] / 10) / rate;
+    rotationalSpeed = outputs[1] / rate;
+
+    //printf("Rotational speed: %.6f\n", rotationalSpeed);
 
     heading += rotationalSpeed;
 

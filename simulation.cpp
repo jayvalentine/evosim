@@ -13,7 +13,7 @@ Simulation::Simulation(World * w, int minCreatures, unsigned int rate)
 void Simulation::AddInitialCreature(double initialX, double initialY)
 {
     // Create a new neural network for the creature.
-    NeuralNetwork * net = new NeuralNetwork(10, 4);
+    NeuralNetwork * net = new NeuralNetwork(13, 4);
 
     // Initialise the network with 3 random synapses.
     for (int i = 0; i < 3; i++)
@@ -34,7 +34,7 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
 
     attr.lifespan = Random::Double(600, 1800);
 
-    attr.sightDistance = Random::Double(100, 300);
+    attr.sightDistance = Random::Double(50, 120);
 
     unsigned int roll = Random::UInt(0, 100);
 
@@ -50,7 +50,7 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
 void Simulation::AddOffspringCreature(Creature * creature)
 {
     // Create a new neural network for the creature and copy the synapses of the old one.
-    NeuralNetwork * net = new NeuralNetwork(10, 4);
+    NeuralNetwork * net = new NeuralNetwork(13, 4);
 
     for (auto s : creature->Net()->Synapses())
     {
@@ -81,9 +81,9 @@ void Simulation::AddOffspringCreature(Creature * creature)
 
     // Creature inherits lifespan directly.
 
-    attr.sightDistance += Random::Double(-25, 25);
+    attr.sightDistance += Random::Double(-5, 5);
     if (attr.sightDistance < 0) attr.sightDistance = 0;
-    else if (attr.sightDistance > 700) attr.sightDistance = 700;
+    else if (attr.sightDistance > 200) attr.sightDistance = 200;
 
     // Create a new shared_ptr for the creature
     Creature * offspring = new Creature(world, creature->GetXPosition(), creature->GetYPosition(), net, attr, creature->Generation() + 1, stepRate);

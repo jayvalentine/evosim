@@ -586,6 +586,23 @@ void View::DrawCreature(SDL_Renderer * renderer, Creature * creature, double cam
     int creaturePixelY = (int) (creatureWithinY * cameraScale);
     int creaturePixelRadius = (int) ((creatureSize / 2) * cameraScale);
 
+    double sightDistance = (creature->GetSize() / 2) + creature->GetAttributes().sightDistance;
+    int sightPixelDistance = sightDistance * cameraScale;
+
+    int endX_A = creaturePixelX + (sightPixelDistance * cos(creature->GetHeading() - 0.52));
+    int endY_A = creaturePixelY + (sightPixelDistance * sin(creature->GetHeading() - 0.52));
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+
+    SDL_RenderDrawLine(renderer, creaturePixelX, creaturePixelY, endX_A, endY_A);
+
+    int endX_B = creaturePixelX + (sightPixelDistance * cos(creature->GetHeading() + 0.52));
+    int endY_B = creaturePixelY + (sightPixelDistance * sin(creature->GetHeading() + 0.52));
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
+
+    SDL_RenderDrawLine(renderer, creaturePixelX, creaturePixelY, endX_B, endY_B);
+
     // Now draw a circle!
     // Actually, draw several circles, so that we get a thick edge.
     //
@@ -613,18 +630,6 @@ void View::DrawCreature(SDL_Renderer * renderer, Creature * creature, double cam
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
     SDL_RenderDrawLine(renderer, creaturePixelX, creaturePixelY, creaturePixelX + dx, creaturePixelY + dy);
-
-    int sightPixelDistance = creature->GetAttributes().sightDistance * cameraScale;
-
-    int startX = creaturePixelX + dx;
-    int startY = creaturePixelY + dy;
-
-    int endX = startX + (sightPixelDistance * cos(creature->GetHeading()));
-    int endY = startY + (sightPixelDistance * sin(creature->GetHeading()));
-
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-
-    SDL_RenderDrawLine(renderer, startX, startY, endX, endY);
 }
 
 void View::DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, unsigned int red, unsigned int green, unsigned int blue)
