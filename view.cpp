@@ -513,29 +513,12 @@ void View::HandleClick(int x, int y)
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(renderer);
 
-    int width;
-    int height;
-
-    SDL_GetRendererOutputSize(renderer, &width, &height);
-
-    // Determine the width and height (in metres) of the camera.
-    double cameraWidth = width / cameraScale;
-    double cameraHeight = height / cameraScale;
-
     // Now we can determine the boundaries of the camera in metres, and so
     // work out what we can display.
-    double cameraLeft = CameraLeft();
-
-    if (cameraLeft < 0.0) cameraLeft = 0.0;
-    else if (cameraLeft > (simReference->GetWorld()->Width() - cameraWidth)) cameraLeft = simReference->GetWorld()->Width() - cameraWidth;
-
-    double cameraTop = cameraY - (cameraHeight / 2);
-    if (cameraTop < 0.0) cameraTop = 0.0;
-    else if (cameraTop > (simReference->GetWorld()->Height() - cameraHeight)) cameraTop = simReference->GetWorld()->Height() - cameraHeight;
 
     // First, calculate the real-world position of the click.
-    double realX = cameraLeft + (x / cameraScale);
-    double realY = cameraTop + (y / cameraScale);
+    double realX = CameraLeft() + (x / cameraScale);
+    double realY = CameraTop() + (y / cameraScale);
 
     // Is this position a creature?
     for (int i = 0; i < simReference->CreatureCount(); i++)
