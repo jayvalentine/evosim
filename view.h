@@ -50,6 +50,8 @@ class View
     void SelectFirst(void);
     void SelectLast(void);
     void SelectHighestGeneration(void);
+    void SelectPrevious(void);
+    void SelectNext(void);
 
     void HandleClick(int x, int y);
 
@@ -82,6 +84,7 @@ class View
 
     // Creature we're focusing on.
     std::shared_ptr<Creature> focusCreature;
+    int focusIndex;
 
     // Font used throughout rendering.
     TTF_Font * font;

@@ -15,6 +15,7 @@ View::View(SDL_Window * window, SDL_Window * netWindow, Simulation * sim, double
     cameraScale = initialScale;
 
     focusCreature = NULL;
+    focusIndex = -1;
 
     // Globally used font.
     font = TTF_OpenFont("VeraMono.ttf", 20);
@@ -506,6 +507,7 @@ void View::SelectFirst(void)
     if (simReference->CreatureCount() == 0) return;
 
     focusCreature = simReference->GetCreature(0);
+    focusIndex = 0;
 }
 
 void View::SelectLast(void)
@@ -514,21 +516,40 @@ void View::SelectLast(void)
     if (simReference->CreatureCount() == 0) return;
 
     focusCreature = simReference->GetCreature(simReference->CreatureCount() - 1);
+    focusIndex = simReference->CreatureCount() - 1;
 }
 
 void View::SelectHighestGeneration(void)
 {
     std::shared_ptr<Creature> selected = simReference->GetCreature(0);
+    focusIndex = 0;
 
     for (int i = 1; i < simReference->CreatureCount(); i++)
     {
         if (selected && simReference->GetCreature(i)->Generation() > selected->Generation())
         {
             selected = simReference->GetCreature(i);
+            focusIndex = i;
         }
     }
 
     focusCreature = selected;
+}
+
+void View::SelectPrevious(void)
+{
+    focusIndex--;
+    if (focusIndex < 0) focusIndex = simReference->CreatureCount() - 1;
+
+    focusCreature = simReference->GetCreature(focusIndex);
+}
+
+void View::SelectNext(void)
+{
+    focusIndex++;
+    if (focusIndex >= simReference->CreatureCount()) focusIndex = 0;
+
+    focusCreature = simReference->GetCreature(focusIndex);
 }
 
 void View::HandleClick(int x, int y)

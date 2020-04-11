@@ -185,6 +185,14 @@ int main(int argc, char * argv[])
                             printf("Select latest generation creature\n");
                             view->SelectHighestGeneration();
                             break;
+                        case SDLK_COMMA:
+                            printf("Select previous creature\n");
+                            view->SelectPrevious();
+                            break;
+                        case SDLK_PERIOD:
+                            printf("Select next creature\n");
+                            view->SelectNext();
+                            break;
                     }
 
                     printf("X: %.2f Y: %.2f\n", view->XCoordinate(), view->YCoordinate());
