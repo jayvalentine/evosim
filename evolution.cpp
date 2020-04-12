@@ -13,7 +13,8 @@ void Evolution::AddRandomSynapse(NeuralNetwork * net)
     int end;
 
     // Pick a pair of neurons that do not already have a synapse.
-    while (!chosen) {
+    while (!chosen)
+    {
         start = Random::Choice<int>(inputs);
         end = Random::Choice<int>(outputs);
 
@@ -27,6 +28,26 @@ void Evolution::AddRandomSynapse(NeuralNetwork * net)
                 break;
             }
         }
+
+        // Determine if there's a hidden neuron connecting these neurons.
+        for (int i = 0; i < synapses.size(); i++)
+        {
+            if (synapses[i]->Start() == start)
+            {
+                int hidden = synapses[i]->End();
+
+                for (int j = 0; j < synapses.size(); j++)
+                {
+                    if (synapses[j]->Start() == hidden && synapses[j]->End() == end)
+                    {
+                        chosen = false;
+                        break;
+                    }
+                }
+            }
+
+            if (!chosen) break;
+        }
     }
 
     // At this point we've found a valid pair, so add a new synapse.
@@ -37,16 +58,49 @@ void Evolution::Mutate(NeuralNetwork * net)
 {
     // Probabilities:
     //
-    // - Add a new synapse: 0.5
-    // - Scale existing synapse weight: 0.3
-    // - Change existing synapse weight: 0.2
+    // - Turn a synapse into a hidden neuron: 0.05
+    // - Add a new synapse: 0.1
+    // - Scale existing synapse weight: 0.25
+    // - Change existing synapse weight: 0.6
     double roll = Random::Double(0, 1);
 
-    if (roll < 0.5 && net->Synapses().size() < (net->Inputs().size() * net->Outputs().size()))
+    bool canAddHidden = false;
+
+    std::vector<Synapse *> synapses = net->Synapses();
+
+    for (int i = 0; i < synapses.size(); i++)
+    {
+        // If a synapse exists between an input and output neuron then we can add a hidden neuron.
+        if (net->Type(synapses[i]->Start()) == NeuralNetwork::NeuronType::INPUT
+            && net->Type(synapses[i]->End()) == NeuralNetwork::NeuronType::OUTPUT)
+        {
+            canAddHidden = true;
+            break;
+        }
+    }
+
+    if (roll < 0.05 && canAddHidden)
+    {
+        std::vector<int> candidates = std::vector<int>();
+
+        for (int i = 0; i < synapses.size(); i++)
+        {
+            if (net->Type(synapses[i]->Start()) == NeuralNetwork::NeuronType::INPUT
+                && net->Type(synapses[i]->End()) == NeuralNetwork::NeuronType::OUTPUT)
+            {
+                candidates.push_back(i);
+            }
+        }
+
+        int index = Random::Choice<int>(candidates);
+
+        net->AddHiddenNeuron(index);
+    }
+    else if (roll < 0.15 && net->Synapses().size() < (net->Inputs().size() * net->Outputs().size()))
     {
         AddRandomSynapse(net);
     }
-    else if (roll < 0.8)
+    else if (roll < 0.4)
     {
         // Do nothing if the network has no synapses.
         if (net->Synapses().size() > 0)

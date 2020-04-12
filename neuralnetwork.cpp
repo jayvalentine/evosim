@@ -10,22 +10,26 @@ void Synapse::ScaleWeight(double factor)
     ChangeWeight(weight * factor);
 }
 
-NeuralNetwork::NeuralNetwork(int inputs, int outputs)
+NeuralNetwork::NeuralNetwork(int inputs, int outputs, int hidden)
 {
     neuronTypes = std::vector<NeuronType>();
     inputValues = std::vector<double>();
 
-    neuronTypes.resize(inputs + outputs);
     inputValues.resize(inputs);
 
     for (int i = 0; i < inputs; i++)
     {
-        neuronTypes[i] = INPUT;
+        neuronTypes.push_back(INPUT);
     }
 
-    for (int o = inputs; o < inputs + outputs; o++)
+    for (int o = 0; o < outputs; o++)
     {
-        neuronTypes[o] = OUTPUT;
+        neuronTypes.push_back(OUTPUT);
+    }
+
+    for (int h = 0; h < hidden; h++)
+    {
+        neuronTypes.push_back(HIDDEN);
     }
 }
 
@@ -75,7 +79,7 @@ void NeuralNetwork::AddHiddenNeuron(int synapseIndex)
     double weight = synapse->Weight();
 
     // Add the hidden neuron.
-    neuronTypes.push_back(NeuronType::HIDDEN);
+    neuronTypes.push_back(HIDDEN);
 
     // Index of the new neuron.
     int hiddenIndex = neuronTypes.size() - 1;
@@ -124,6 +128,7 @@ double NeuralNetwork::NeuronValue(int neuron)
 
 NeuralNetwork::NeuronType NeuralNetwork::Type(int neuron)
 {
+    if (neuron >= neuronTypes.size()) printf("Invalid neuron: %d for size: %lu\n", neuron, neuronTypes.size());
     return neuronTypes[neuron];
 }
 

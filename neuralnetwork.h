@@ -44,7 +44,7 @@ class NeuralNetwork
         HIDDEN
     };
 
-    NeuralNetwork(int inputs, int outputs);
+    NeuralNetwork(int inputs, int outputs, int hidden);
 
     ~NeuralNetwork();
 
