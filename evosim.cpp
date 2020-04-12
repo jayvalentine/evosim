@@ -7,6 +7,9 @@
 #include <chrono>
 #include <thread>
 
+#include <iostream>
+#include <fstream>
+
 #include "world.h"
 #include "creature.h"
 #include "view.h"
@@ -249,6 +252,16 @@ int main(int argc, char * argv[])
 
                 // Sleep for the number of milliseconds calculated.
                 std::this_thread::sleep_for(std::chrono::milliseconds(paddingTime));
+            }
+
+            // Log the world's population.
+            // Do this every 20 (simulation) minutes.
+            if (sim->SimulationTime() % 1200 == 0)
+            {
+                std::ofstream logFile;
+                logFile.open("population.log", std::ios::out | std::ios_base::app);
+
+                logFile << sim->CreatureCount() << std::endl;
             }
         }
     }
