@@ -55,9 +55,39 @@ std::vector<double> NeuralNetwork::OutputValues(std::vector<double> inputs)
     return outputs;
 }
 
-void NeuralNetwork::AddSynapse(int input, int output, double weight)
+void NeuralNetwork::AddSynapse(int start, int end, double weight)
 {
-    synapses.push_back(new Synapse(input, output, weight));
+    synapses.push_back(new Synapse(start, end, weight));
+}
+
+// Add a hidden neuron on a given synapse.
+// The synapse must be between an input neuron and an output one -
+// i.e. only one hidden layer is allowed.
+void NeuralNetwork::AddHiddenNeuron(int synapseIndex)
+{
+    Synapse * synapse = synapses[synapseIndex];
+
+    // Get the start and end neuron for the synapse.
+    int input = synapse->Start();
+    int output = synapse->End();
+
+    // Synapse weight. The two new synapses we create will have this same weight.
+    double weight = synapse->Weight();
+
+    // Add the hidden neuron.
+    neuronTypes.push_back(NeuronType::HIDDEN);
+
+    // Index of the new neuron.
+    int hiddenIndex = neuronTypes.size() - 1;
+
+    // Delete the old synapse and replace with a new one.
+    delete synapse;
+    synapses[synapseIndex] = new Synapse(input, hiddenIndex, weight);
+
+    // Add a new synapse from the hidden neuron to the end one.
+    synapses.push_back(new Synapse(hiddenIndex, output, weight));
+
+    // And we're done!
 }
 
 double NeuralNetwork::NeuronValue(int neuron)
@@ -92,6 +122,11 @@ double NeuralNetwork::NeuronValue(int neuron)
     return weightedSum / (1 + fabs(weightedSum));
 }
 
+NeuralNetwork::NeuronType NeuralNetwork::Type(int neuron)
+{
+    return neuronTypes[neuron];
+}
+
 std::vector<int> NeuralNetwork::Inputs(void)
 {
     std::vector<int> inputs = std::vector<int>();
@@ -114,6 +149,18 @@ std::vector<int> NeuralNetwork::Outputs(void)
     }
 
     return outputs;
+}
+
+std::vector<int> NeuralNetwork::Hidden(void)
+{
+    std::vector<int> hidden = std::vector<int>();
+
+    for (int i = 0; i < neuronTypes.size(); i++)
+    {
+        if (neuronTypes[i] == HIDDEN) hidden.push_back(i);
+    }
+
+    return hidden;
 }
 
 std::vector<Synapse *> NeuralNetwork::Synapses(void)

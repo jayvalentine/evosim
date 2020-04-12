@@ -40,7 +40,8 @@ class NeuralNetwork
     enum NeuronType
     {
         INPUT,
-        OUTPUT
+        OUTPUT,
+        HIDDEN
     };
 
     NeuralNetwork(int inputs, int outputs);
@@ -49,13 +50,17 @@ class NeuralNetwork
 
     std::vector<double> OutputValues(std::vector<double> inputs);
 
-    void AddSynapse(int input, int output, double weight);
+    void AddSynapse(int start, int end, double weight);
+    void AddHiddenNeuron(int synapseIndex);
 
     double NeuronValue(int neuronIndex);
 
     std::vector<int> Inputs(void);
     std::vector<int> Outputs(void);
+    std::vector<int> Hidden(void);
     std::vector<Synapse *> Synapses(void);
+
+    NeuronType Type(int neuron);
 
     private:
 

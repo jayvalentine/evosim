@@ -28,8 +28,9 @@ View::~View()
 
 void View::RenderNet(NeuralNetwork * net)
 {
-    // Render the input neurons.
     std::vector<int> inputs = net->Inputs();
+    std::vector<int> outputs = net->Outputs();
+    std::vector<int> hidden = net->Hidden();
 
     // First draw the synapses. That way the neurons will be drawn over them.
     std::vector<Synapse *> synapses = net->Synapses();
@@ -39,12 +40,43 @@ void View::RenderNet(NeuralNetwork * net)
         // From an input to an output.
         Synapse * s = synapses[i];
 
-        int startX = 25;
-        int endX = 375;
+        NeuralNetwork::NeuronType startType = net->Type(s->Start());
+        NeuralNetwork::NeuronType endType = net->Type(s->End());
 
-        int startY = 25 + (35 * s->Start());
-        int endY = 25 + (35 * (s->End() - inputs.size()));
+        int startX;
+        int endX;
 
+        int startY;
+        int endY;
+        
+        if (startType == NeuralNetwork::NeuronType::INPUT)
+        {
+            startX = 25;
+
+            startY = 25 + (35 * s->Start());
+
+            if (endType == NeuralNetwork::NeuronType::OUTPUT)
+            {
+                endX = 375;
+
+                endY = 25 + (35 * (s->End() - inputs.size()));
+            }
+            else
+            {
+                endX = 200;
+
+                endY = 25 + (35 * (s->End() - inputs.size() - outputs.size()));
+            }
+        }
+        else
+        {
+            startX = 200;
+            startY = 25 + (35 * (s->Start() - inputs.size() - outputs.size()));
+
+            endX = 375;
+            endY = 25 + (35 * (s->End() - inputs.size()));
+        }
+        
         SDL_SetRenderDrawColor(netRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
         SDL_RenderDrawLine(netRenderer, startX, startY, endX, endY);
     }
@@ -88,9 +120,6 @@ void View::RenderNet(NeuralNetwork * net)
         FillCircle(netRenderer, x, y, 14, red, green, blue);
     }
 
-    // Now draw the output neurons.
-    std::vector<int> outputs = net->Outputs();
-
     for (int i = 0; i < outputs.size(); i++)
     {
         int x = 375;
@@ -108,6 +137,46 @@ void View::RenderNet(NeuralNetwork * net)
         unsigned int blue = 255;
 
         double value = net->NeuronValue(outputs[i]);
+
+        // We expect value to be betwen -1 and 1, but lets bound it to be sure.
+        if (value < -1.0) value = -1.0;
+        else if (value > 1.0) value = 1.0;
+
+        if (value < 0.0)
+        {
+            unsigned int subtract = (unsigned int) (-value * 255);
+            green -= subtract;
+            blue -= subtract;
+        }
+        else if (value > 0.0)
+        {
+            unsigned int subtract = (unsigned int) (value * 255);
+            red -= subtract;
+            blue -= subtract;
+        }
+
+        // Now fill the circle we just drew with the calculated color.
+        FillCircle(netRenderer, x, y, 14, red, green, blue);
+    }
+
+    // Now draw any hidden neurons.
+    for (int i = 0; i < hidden.size(); i++)
+    {
+        int x = 200;
+        int y = 25 + (35 * (hidden[i] - inputs.size() - outputs.size()));
+
+        DrawCircle(netRenderer, x, y, 15, 255, 255, 255);
+
+        // Determine the colour of the neuron.
+        // Red if the neuron is negative,
+        // White if the neuron is 0,
+        // Green if the neuron is positive.
+
+        unsigned int red = 255;
+        unsigned int green = 255;
+        unsigned int blue = 255;
+
+        double value = net->NeuronValue(hidden[i]);
 
         // We expect value to be betwen -1 and 1, but lets bound it to be sure.
         if (value < -1.0) value = -1.0;

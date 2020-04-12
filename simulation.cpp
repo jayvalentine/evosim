@@ -21,6 +21,9 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
         Evolution::AddRandomSynapse(net);
     }
 
+    // Test: add a hidden neuron between an input and output.
+    net->AddHiddenNeuron(0);
+
     // Create the creature's attributes.
     Creature::Attributes attr;
 
