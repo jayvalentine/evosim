@@ -58,10 +58,10 @@ void Evolution::Mutate(NeuralNetwork * net)
 {
     // Probabilities:
     //
-    // - Turn a synapse into a hidden neuron: 0.05
-    // - Add a new synapse: 0.1
-    // - Scale existing synapse weight: 0.25
-    // - Change existing synapse weight: 0.6
+    // - Turn a synapse into a hidden neuron: 0.01
+    // - Add a new synapse: 0.09
+    // - Scale existing synapse weight: 0.2
+    // - Change existing synapse weight: 0.7
     double roll = Random::Double(0, 1);
 
     bool canAddHidden = false;
@@ -79,7 +79,7 @@ void Evolution::Mutate(NeuralNetwork * net)
         }
     }
 
-    if (roll < 0.05 && canAddHidden)
+    if (roll < 0.01 && canAddHidden)
     {
         std::vector<int> candidates = std::vector<int>();
 
@@ -96,11 +96,11 @@ void Evolution::Mutate(NeuralNetwork * net)
 
         net->AddHiddenNeuron(index);
     }
-    else if (roll < 0.15 && net->Synapses().size() < (net->Inputs().size() * net->Outputs().size()))
+    else if (roll < 0.1 && net->Synapses().size() < (net->Inputs().size() * net->Outputs().size()))
     {
         AddRandomSynapse(net);
     }
-    else if (roll < 0.4)
+    else if (roll < 0.3)
     {
         // Do nothing if the network has no synapses.
         if (net->Synapses().size() > 0)
@@ -108,8 +108,8 @@ void Evolution::Mutate(NeuralNetwork * net)
             // Pick a random synapse.
             Synapse * s = Random::Choice<Synapse *>(net->Synapses());
 
-            // Scale its weight.
-            s->ScaleWeight(Random::Double(0.8, 1.2));
+            // Change its weight to a value in the range -1, 1.
+            s->ChangeWeight(Random::Double(-1.0, 1.0));
         }
     }
     else
@@ -120,8 +120,8 @@ void Evolution::Mutate(NeuralNetwork * net)
             // Pick a random synapse.
             Synapse * s = Random::Choice<Synapse *>(net->Synapses());
 
-            // Change its weight to a value in the range -1, 1.
-            s->ChangeWeight(Random::Double(-1.0, 1.0));
+            // Scale its weight.
+            s->ScaleWeight(Random::Double(0.8, 1.2));
         }
     }
 }
