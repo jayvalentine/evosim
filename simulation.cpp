@@ -15,8 +15,8 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
     // Create a new neural network for the creature.
     NeuralNetwork * net = new NeuralNetwork(13, 4, 0);
 
-    // Initialise the network with 3 random synapses.
-    for (int i = 0; i < 3; i++)
+    // Initialise the network with 4 random synapses.
+    for (int i = 0; i < 4; i++)
     {
         Evolution::AddRandomSynapse(net);
     }
@@ -32,7 +32,7 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
 
     attr.maxSize = Random::Double(25,  100);
 
-    attr.lifespan = Random::Double(600, 1800);
+    attr.lifespan = Random::Double(2000, 5000);
 
     attr.sightDistance = Random::Double(50, 120);
 

@@ -215,7 +215,7 @@ void View::RenderInfo(Creature * creature)
 
     RenderText(netRenderer, buf, leftColumn, startPosition + 40);
 
-    sprintf(buf, "Age:        %d", (int)creature->GetAge());
+    sprintf(buf, "Age:        %d/%d", (int)creature->GetAge(), (int)creature->GetAttributes().lifespan);
 
     RenderText(netRenderer, buf, leftColumn, startPosition + 70);
 

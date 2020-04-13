@@ -142,8 +142,11 @@ Creature::StepState Creature::Step(unsigned int rate)
     else if (y < 0.0) y = world->Height() + y;
 
     // Desire to give birth is output 3.
-    // If above 0, the creature may give birth.
-    if (outputs[3] > 0 && reproductionDelay == 0) 
+    // If above or equal to 0, the creature may give birth.
+    //
+    // Note: allowing birth if the birth desire is 0 allows for those creatures for whom the birth neuron
+    // is disconnected to still reproduce.
+    if (outputs[3] >= 0 && reproductionDelay == 0) 
     {
         state = GIVE_BIRTH;
 
