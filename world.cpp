@@ -12,8 +12,20 @@ void World::Tile::Step(unsigned int rate)
 {
     // Each tile grows by a factor of 1.005 per second.
     // This means that tiles which have been completely destroyed do not grow at all.
-    food += food * (0.005 / rate);
-    if (food > Tile::MaximumFoodValue) food = Tile::MaximumFoodValue;
+    food += food * GrowthRate(rate);
+    if (food > MaximumFoodValue()) food = MaximumFoodValue();
+}
+
+double World::Tile::GrowthRate(unsigned int rate)
+{
+    if (type == TileType::LAND) return (0.01 / rate);
+    else return (0.005 / rate);
+}
+
+double World::Tile::MaximumFoodValue(void)
+{
+    if (type == TileType::LAND) return 100000.0;
+    else return 10000.0;
 }
 
 double World::Tile::ReduceByPercentage(double percentage)
@@ -25,21 +37,21 @@ double World::Tile::ReduceByPercentage(double percentage)
     return value;
 }
 
-unsigned char World::Tile::Red(void) const
+unsigned char World::Tile::Red(void)
 {
     if (type == LAND) return 100;
     else return 0;
 }
 
-unsigned char World::Tile::Green(void) const
+unsigned char World::Tile::Green(void)
 {
-    return 100 + (int)((food / MaximumFoodValue) * 155);
+    return 100 + (int)((food / MaximumFoodValue()) * 155);
 }
 
-unsigned char World::Tile::Blue(void) const
+unsigned char World::Tile::Blue(void)
 {
     if (type == LAND) return 100;
-    else return 150 + (int)((food / MaximumFoodValue) * 105);
+    else return 150 + (int)((food / MaximumFoodValue()) * 105);
 }
 
 World::World(double w, double h, double t)
@@ -97,7 +109,7 @@ World::World(double w, double h, double t)
 
         for (int y = 0; y < tileTypes[x].size(); y++)
         {
-            tiles[x].push_back(new Tile(tileTypes[x][y], Random::Double(0, Tile::MaximumFoodValue)));
+            tiles[x].push_back(new Tile(tileTypes[x][y], Random::Double(0, 100000)));
         }
     }
 }

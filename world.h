@@ -19,17 +19,18 @@ class World
     {
         public:
 
-        static constexpr double MaximumFoodValue = 100000.0;
-
         Tile(TileType t, double f);
 
         void Step(unsigned int rate);
 
+        double GrowthRate(unsigned int rate);
+        double MaximumFoodValue(void);
+
         double ReduceByPercentage(double percentage);
 
-        unsigned char Red(void) const;
-        unsigned char Green(void) const;
-        unsigned char Blue(void) const;
+        unsigned char Red(void);
+        unsigned char Green(void);
+        unsigned char Blue(void);
 
         TileType Type(void) const { return type; }
         double Food(void) const { return food; }
