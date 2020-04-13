@@ -85,6 +85,12 @@ void Simulation::AddOffspringCreature(Creature * creature)
     if (attr.sightDistance < 0) attr.sightDistance = 0;
     else if (attr.sightDistance > 200) attr.sightDistance = 200;
 
+    // Small chance to become amphibious.
+    if (Random::Double(0, 1) < 0.01)
+    {
+        attr.breathing = Creature::BreathingType::BOTH;
+    }
+
     // Create a new shared_ptr for the creature
     Creature * offspring = new Creature(world, creature->GetXPosition(), creature->GetYPosition(), net, attr, creature->Generation() + 1, stepRate);
 
