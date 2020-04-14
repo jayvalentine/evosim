@@ -36,9 +36,7 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
 
     attr.sightDistance = Random::Double(50, 120);
 
-    unsigned int roll = Random::UInt(0, 100);
-
-    if (roll < 50) attr.breathing = Creature::BreathingType::LAND;
+    if (world->GetTile(initialX, initialY)->Type() == World::TileType::LAND) attr.breathing = Creature::BreathingType::LAND;
     else attr.breathing = Creature::BreathingType::WATER;
 
     // Create a new shared_ptr for the creature;
