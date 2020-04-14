@@ -27,8 +27,8 @@
 #define MIN_SIZE 0.1
 #define MAX_SIZE 100.0
 
-#define START_CREATURES 5000
-#define MIN_CREATURES 10
+#define START_CREATURES 1000
+#define MIN_CREATURES 20
 
 // Frames per second of the application.
 #define FPS 30
