@@ -24,8 +24,8 @@ double World::Tile::GrowthRate(unsigned int rate)
 
 double World::Tile::MaximumFoodValue(void)
 {
-    if (type == TileType::LAND) return 100000.0;
-    else return 10000.0;
+    if (type == TileType::LAND) return 300000.0;
+    else return 100000.0;
 }
 
 double World::Tile::ReduceByPercentage(double percentage)
