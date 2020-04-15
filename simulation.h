@@ -1,4 +1,5 @@
 #include <memory>
+#include <cmath>
 
 #include "world.h"
 #include "creature.h"

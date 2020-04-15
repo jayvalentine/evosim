@@ -18,8 +18,8 @@ void World::Tile::Step(unsigned int rate)
 
 double World::Tile::GrowthRate(unsigned int rate)
 {
-    if (type == TileType::LAND) return (0.01 / rate);
-    else return (0.005 / rate);
+    if (type == TileType::LAND) return (0.002 / rate);
+    else return (0.001 / rate);
 }
 
 double World::Tile::MaximumFoodValue(void)
@@ -35,6 +35,12 @@ double World::Tile::ReduceByPercentage(double percentage)
     food -= value;
 
     return value;
+}
+
+void World::Tile::IncreaseFood(double amount)
+{
+    food += amount;
+    if (food > MaximumFoodValue()) food = MaximumFoodValue();
 }
 
 unsigned char World::Tile::Red(void)

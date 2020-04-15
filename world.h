@@ -27,6 +27,7 @@ class World
         double MaximumFoodValue(void);
 
         double ReduceByPercentage(double percentage);
+        void IncreaseFood(double amount);
 
         unsigned char Red(void);
         unsigned char Green(void);

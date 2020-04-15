@@ -32,7 +32,7 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
 
     attr.maxSize = Random::Double(25,  100);
 
-    attr.lifespan = Random::Double(1000, 2500);
+    attr.lifespan = Random::Double(500, 1200);
 
     attr.sightDistance = Random::Double(50, 120);
 
@@ -84,7 +84,7 @@ void Simulation::AddOffspringCreature(Creature * creature)
     else if (attr.sightDistance > 200) attr.sightDistance = 200;
 
     // Small chance to become amphibious.
-    if (Random::Double(0, 1) < 0.01)
+    if (Random::Double(0, 1) < 0.00001)
     {
         attr.breathing = Creature::BreathingType::BOTH;
     }
@@ -123,6 +123,11 @@ void Simulation::Step(void)
     {
         if (creatures[i]->Dead())
         {
+            // What comes from the earth, goes back to it.
+            // Dead creatures add some food to their environment.
+            double foodToAdd = std::pow(creatures[i]->GetSize(), 3);
+            world->GetTile(creatures[i]->GetXPosition(), creatures[i]->GetYPosition())->IncreaseFood(foodToAdd);
+
             deadIndexes.push_back(i);
         }
     }
