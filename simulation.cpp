@@ -32,7 +32,7 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
 
     attr.maxSize = Random::Double(25,  100);
 
-    attr.lifespan = Random::Double(2000, 5000);
+    attr.lifespan = Random::Double(1000, 2500);
 
     attr.sightDistance = Random::Double(50, 120);
 
