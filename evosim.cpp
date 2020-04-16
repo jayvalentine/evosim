@@ -262,7 +262,16 @@ int main(int argc, char * argv[])
                 std::ofstream logFile;
                 logFile.open("population.log", std::ios::out | std::ios_base::app);
 
-                logFile << sim->CreatureCount() << std::endl;
+                logFile << sim->CreatureCount() << ":";
+
+                for (int i = 0; i < sim->CreatureCount(); i++)
+                {
+                    std::shared_ptr<Creature> c = sim->GetCreature(i);
+
+                    logFile << "(" << c->Red() << "," << c->Green() << "," << c->Blue() << "):";
+                }
+
+                logFile << std::endl;
             }
 
             if (sim->CreatureCount() > MAX_CREATURES)
