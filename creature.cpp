@@ -15,7 +15,7 @@ Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * 
     speed = 0.0;
     rotationalSpeed = 0.0;
     sizeFactor = 0.5;
-    reproductionDelay = 360 * rate;
+    reproductionDelay = 30 * rate;
     age = 0;
 
     attributes = attr;
@@ -151,7 +151,7 @@ Creature::StepState Creature::Step(unsigned int rate)
         state = GIVE_BIRTH;
 
         // Creature cannot give birth again for a minute.
-        reproductionDelay = 60 * rate;
+        reproductionDelay = 30 * rate;
     }
 
     // Calculate energy used.

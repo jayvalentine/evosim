@@ -126,6 +126,8 @@ void Simulation::Step(void)
             // What comes from the earth, goes back to it.
             // Dead creatures add some food to their environment.
             double foodToAdd = std::pow(creatures[i]->GetSize(), 3);
+            if (foodToAdd < 0) foodToAdd = 0;
+            
             world->GetTile(creatures[i]->GetXPosition(), creatures[i]->GetYPosition())->IncreaseFood(foodToAdd);
 
             deadIndexes.push_back(i);

@@ -10,6 +10,14 @@ World::Tile::Tile(World::TileType t, double f)
 
 void World::Tile::Step(unsigned int rate)
 {
+    if (food < 0) food = 0;
+
+    if (food == 0)
+    {
+        double roll = Random::Double(0, 1);
+        if (roll < 0.01) food = 10;
+    }
+
     // Each tile grows by a factor of 1.005 per second.
     // This means that tiles which have been completely destroyed do not grow at all.
     food += food * GrowthRate(rate);
@@ -18,14 +26,13 @@ void World::Tile::Step(unsigned int rate)
 
 double World::Tile::GrowthRate(unsigned int rate)
 {
-    if (type == TileType::LAND) return (0.002 / rate);
+    if (type == TileType::LAND) return (0.01 / rate);
     else return (0.001 / rate);
 }
 
 double World::Tile::MaximumFoodValue(void)
 {
-    if (type == TileType::LAND) return 300000.0;
-    else return 100000.0;
+    return 100000.0;
 }
 
 double World::Tile::ReduceByPercentage(double percentage)
@@ -51,13 +58,13 @@ unsigned char World::Tile::Red(void)
 
 unsigned char World::Tile::Green(void)
 {
-    return 100 + (int)((food / MaximumFoodValue()) * 155);
+    return 100 + (int)((food / (MaximumFoodValue() + 1)) * 155);
 }
 
 unsigned char World::Tile::Blue(void)
 {
     if (type == LAND) return 100;
-    else return 150 + (int)((food / MaximumFoodValue()) * 105);
+    else return 150 + (int)((food / (MaximumFoodValue() + 1)) * 105);
 }
 
 World::World(double w, double h, double t)

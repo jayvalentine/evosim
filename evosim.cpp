@@ -29,6 +29,7 @@
 
 #define START_CREATURES 1000
 #define MIN_CREATURES 20
+#define MAX_CREATURES 5000
 
 // Frames per second of the application.
 #define FPS 30
@@ -262,6 +263,12 @@ int main(int argc, char * argv[])
                 logFile.open("population.log", std::ios::out | std::ios_base::app);
 
                 logFile << sim->CreatureCount() << std::endl;
+            }
+
+            if (sim->CreatureCount() > MAX_CREATURES)
+            {
+                printf("Maximum population exceeded. Exiting...\n");
+                quit = true;   
             }
         }
     }
