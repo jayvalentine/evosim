@@ -58,8 +58,8 @@ void Evolution::Mutate(NeuralNetwork * net)
 {
     // Probabilities:
     //
-    // - Turn a synapse into a hidden neuron: 0.01
-    // - Add a new synapse: 0.09
+    // - Turn a synapse into a hidden neuron: 0.03
+    // - Add a new synapse: 0.07
     // - Scale existing synapse weight: 0.2
     // - Change existing synapse weight: 0.7
     double roll = Random::Double(0, 1);
@@ -79,7 +79,7 @@ void Evolution::Mutate(NeuralNetwork * net)
         }
     }
 
-    if (roll < 0.01 && canAddHidden)
+    if (roll < 0.03 && canAddHidden)
     {
         std::vector<int> candidates = std::vector<int>();
 
