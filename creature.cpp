@@ -175,8 +175,8 @@ Creature::StepState Creature::Step(unsigned int rate)
     // Giving birth requires 1/2 of size.
     if (state == GIVE_BIRTH) sizeFactor -= 0.5;
 
-    // If size factor < 0.3, the creature is dead.
-    if (sizeFactor < 0.3)
+    // If size factor < 0.1, the creature is dead.
+    if (sizeFactor < 0.1)
     {
         dead = true;
         state = DEAD;
