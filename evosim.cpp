@@ -31,10 +31,12 @@
 #define MIN_CREATURES 20
 #define MAX_CREATURES 5000
 
-#define MAX_TIME 20 * 60 * 60
+#define MAX_TIME 40 * 60 * 60
 
 // Frames per second of the application.
 #define FPS 30
+
+#define INTERACTIVE 0
 
 // Global random engine.
 std::default_random_engine g_generator;
@@ -67,12 +69,15 @@ int main(int argc, char * argv[])
 
     // We've successfully initialized SDL and TTF.
 
-    // Now we'll draw the main window.
-    window = SDL_CreateWindow("EvoSim", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (INTERACTIVE)
+    {
+        // Now we'll draw the main window.
+        window = SDL_CreateWindow("EvoSim", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
-    // This is a window to show the neural network of the selected creature.
-    // It's hidden initially.
-    netWindow = SDL_CreateWindow("Selected Creature", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 900, SDL_WINDOW_HIDDEN);
+        // This is a window to show the neural network of the selected creature.
+        // It's hidden initially.
+        netWindow = SDL_CreateWindow("Selected Creature", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 900, SDL_WINDOW_HIDDEN);
+    }
 
     SDL_Event e;
 
@@ -107,8 +112,13 @@ int main(int argc, char * argv[])
     // i.e., scale=1 means 1m is 1p, scale=45 means 1m is 45p.
     const double cameraScale = 1.0;
 
-    // Construct a view.
-    View * view = new View(window, netWindow, sim, cameraX, cameraY, cameraScale);
+    View * view = NULL;
+
+    if (INTERACTIVE)
+    {
+        // Construct a view.
+        view = new View(window, netWindow, sim, cameraX, cameraY, cameraScale);
+    }
     
     bool quit = false;
 
@@ -129,7 +139,7 @@ int main(int argc, char * argv[])
             // We'll use this to cap the framerate.
             unsigned int startTime = SDL_GetTicks();
 
-            while (SDL_PollEvent(&e) != 0)
+            while (INTERACTIVE && SDL_PollEvent(&e) != 0)
             {
                 if (e.type == SDL_QUIT)
                 {
@@ -218,7 +228,7 @@ int main(int argc, char * argv[])
             sim->Step();
 
             // Render the view to the user.
-            if (render)
+            if (render && (view != NULL))
             {
                 view->Render(); 
             }
@@ -239,7 +249,8 @@ int main(int argc, char * argv[])
 
             sprintf(infoBuf, "Run time: %s, Simulation time: %s, Population: %10lu", runTimeString, simTimeString, sim->CreatureCount());
 
-            view->RenderSimulationInfo(infoBuf);
+            if (view != NULL) view->RenderSimulationInfo(infoBuf);
+            else if ((sim->Steps() % (30 * 60 * FPS)) == 0) printf("%s\n", infoBuf);
 
             // Work out the time it took to perform this iteration.
             unsigned int elapsedTime = endTime - startTime;
@@ -249,7 +260,7 @@ int main(int argc, char * argv[])
             // Because we're working in milliseconds, this becomes 1000/60.
             //
             // We skip this if we're not rendering.
-            if (render && (elapsedTime < (1000.0 / FPS)))
+            if (INTERACTIVE && render && (elapsedTime < (1000.0 / FPS)))
             {
                 unsigned int paddingTime = (1000.0 / FPS) - elapsedTime;
 
@@ -259,7 +270,7 @@ int main(int argc, char * argv[])
 
             // Log the world's population.
             // Do this every 5 (simulation) minutes.
-            if (sim->SimulationTime() % 300 == 0)
+            if ((sim->Steps() % (300 * FPS)) == 0)
             {
                 std::ofstream logFile;
                 logFile.open("population.log", std::ios::out | std::ios_base::app);
@@ -290,10 +301,10 @@ int main(int argc, char * argv[])
     }
 
     // Delete the view.
-    delete view;
+    if (view != NULL) delete view;
 
     // Clean up the window and quit.
-    SDL_DestroyWindow(window);
+    if (INTERACTIVE) SDL_DestroyWindow(window);
     SDL_Quit();
     TTF_Quit();
 

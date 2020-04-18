@@ -13,6 +13,7 @@ class Simulation
     Simulation(World * w, int minCreatures, unsigned int rate);
 
     void Step(void);
+    unsigned int Steps(void);
 
     unsigned int SimulationTime(void);
 

@@ -157,6 +157,11 @@ void Simulation::Step(void)
     steps++;
 }
 
+unsigned int Simulation::Steps(void)
+{
+    return steps;
+}
+
 unsigned int Simulation::SimulationTime(void)
 {
     // Divide the number of steps by the rate to get the time in seconds.
