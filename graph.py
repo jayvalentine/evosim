@@ -2,6 +2,13 @@ from ast import literal_eval
 
 import matplotlib.pyplot as plt
 
+import os
+
+if (os.path.exists('population.log')):
+    os.remove('population.log')
+
+os.system('./evosim.exe')
+
 # Get the number of lines in the file.
 
 file = open('population.log', 'r')
