@@ -31,6 +31,8 @@
 #define MIN_CREATURES 20
 #define MAX_CREATURES 5000
 
+#define MAX_TIME 20 * 60 * 60
+
 // Frames per second of the application.
 #define FPS 30
 
@@ -256,8 +258,8 @@ int main(int argc, char * argv[])
             }
 
             // Log the world's population.
-            // Do this every 20 (simulation) minutes.
-            if (sim->SimulationTime() % 1200 == 0)
+            // Do this every 5 (simulation) minutes.
+            if (sim->SimulationTime() % 300 == 0)
             {
                 std::ofstream logFile;
                 logFile.open("population.log", std::ios::out | std::ios_base::app);
@@ -274,9 +276,9 @@ int main(int argc, char * argv[])
                 logFile << std::endl;
             }
 
-            if (sim->CreatureCount() > MAX_CREATURES)
+            if (sim->CreatureCount() > MAX_CREATURES || sim->SimulationTime() > MAX_TIME)
             {
-                printf("Maximum population exceeded. Exiting...\n");
+                printf("Maximum population/time exceeded. Exiting...\n");
                 quit = true;   
             }
         }
