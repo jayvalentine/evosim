@@ -2,11 +2,28 @@ from ast import literal_eval
 
 import matplotlib.pyplot as plt
 
+# Get the number of lines in the file.
+
 file = open('population.log', 'r')
+
+lines = 0
+while True:
+    line = file.readline()
+
+    if not line:
+        break
+
+    lines += 1
+
+file.close()
+
+print(f"Found {lines} lines. Processing...")
 
 groups = {}
 
 step = 0
+
+file = open('population.log', 'r')
 
 while True:
     line = file.readline()
@@ -27,7 +44,7 @@ while True:
 
         for k in groups.keys():
             ref_colour = literal_eval(k)
-            if (abs(ref_colour[0] - colours[0]) < 10) and (abs(ref_colour[1] - colours[1]) < 10) and (abs(ref_colour[2] - colours[2]) < 10):
+            if (abs(ref_colour[0] - colours[0]) < 20) and (abs(ref_colour[1] - colours[1]) < 20) and (abs(ref_colour[2] - colours[2]) < 20):
                 found_key = k
 
         if found_key:
@@ -39,7 +56,13 @@ while True:
             groups[c] = {step: 1}
 
     step += 1
-    print(".", end="", flush=True)
+
+    print(f"{step}/{lines}...")
+
+max_steps = step
+
+first = True
+last_populations = []
 
 for k in groups.keys():
     steps = list(groups[k].keys())
@@ -50,10 +73,28 @@ for k in groups.keys():
 
     populations = []
 
-    for s in steps:
-        populations.append(groups[k][s])
+    for s in range(max_steps):
+        if first:
+            if s in groups[k].keys():
+                populations.append(groups[k][s])
+            else:
+                populations.append(0)
+        else:
+            if s in groups[k].keys():
+                populations.append(last_populations[s] + groups[k][s])
+            else:
+                populations.append(0)
 
-    plt.plot(steps, populations, color=line_color)
+    if first:
+        last_populations = populations
+    else:
+        for i in range(len(last_populations)):
+            if populations[i] > 0:
+                last_populations[i] = populations[i]
+
+    plt.plot(range(max_steps), populations, color=line_color)
+
+    first = False
 
 plt.show()
 
