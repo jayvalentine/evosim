@@ -250,7 +250,7 @@ int main(int argc, char * argv[])
             sprintf(infoBuf, "Run time: %s, Simulation time: %s, Population: %10lu", runTimeString, simTimeString, sim->CreatureCount());
 
             if (view != NULL) view->RenderSimulationInfo(infoBuf);
-            else if ((sim->Steps() % (30 * 60 * FPS)) == 0) printf("%s\n", infoBuf);
+            else if ((sim->Steps() % (10 * 60 * FPS)) == 0) printf("%s\n", infoBuf);
 
             // Work out the time it took to perform this iteration.
             unsigned int elapsedTime = endTime - startTime;
