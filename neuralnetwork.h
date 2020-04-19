@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <tuple>
+#include <utility>
+#include <map>
 
 #include <math.h>
 
@@ -19,9 +21,9 @@ class Synapse
         weight = w;
     };
 
-    int Start(void) { return start; }
-    int End(void) { return end; }
-    double Weight(void) { return weight; }
+    inline int Start(void) { return start; }
+    inline int End(void) { return end; }
+    inline double Weight(void) { return weight; }
 
     void ChangeWeight(double newWeight);
     void ScaleWeight(double factor);
@@ -31,6 +33,8 @@ class Synapse
     int start;
     int end;
     double weight;
+    bool cached;
+    bool cachedValue;
 };
 
 class NeuralNetwork
@@ -48,34 +52,12 @@ class NeuralNetwork
 
     ~NeuralNetwork();
 
-    std::vector<double> OutputValues(std::vector<double> inputs);
+    void OutputValues(double * inputs, double * outputs);
 
     void AddSynapse(int start, int end, double weight);
     void AddHiddenNeuron(int synapseIndex);
 
-    inline double NeuronValue(int neuron)
-    {
-        // Base case. If we've got an input, return the input value.
-        if (neuronTypes[neuron] == INPUT)
-        {
-            return inputValues[neuron];
-        }
-
-        // Find all neurons for which this one is the end, and calculate a weighted sum.
-        double weightedSum = 0.0;
-
-        for (int i = 0; i < synapses.size(); i++)
-        {
-            if (synapses[i]->End() == neuron)
-            {
-                weightedSum += (synapses[i]->Weight() * NeuronValue(synapses[i]->Start()));
-            }
-        }
-
-        // The value of the neuron is the weighted sum passed through a sigmoid function.
-        // Here we use a fast approximation.
-        return weightedSum / (1 + fabs(weightedSum));
-    }
+    double NeuronValue(int neuron);
 
     std::vector<int> Inputs(void);
     std::vector<int> Outputs(void);
@@ -89,6 +71,8 @@ class NeuralNetwork
     std::vector<Synapse *> synapses;
     std::vector<double> inputValues;
     std::vector<NeuronType> neuronTypes;
+    unsigned int outputSize;
+    unsigned int inputSize;
 };
 
 #endif // NEURALNETWORK_H

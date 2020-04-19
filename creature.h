@@ -116,6 +116,8 @@ class Creature
 
     // This creature's neural network.
     NeuralNetwork * net;
+    double * netInputs;
+    double * netOutputs;
 };
 
 #endif // CREATURE_H

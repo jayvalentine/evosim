@@ -24,14 +24,31 @@ class World
         void Step(unsigned int rate);
 
         double GrowthRate(unsigned int rate);
-        double MaximumFoodValue(void);
+
+        inline double MaximumFoodValue(void)
+        {
+            return 100000.0;
+        }
 
         double ReduceByPercentage(double percentage);
         void IncreaseFood(double amount);
 
-        unsigned char Red(void);
-        unsigned char Green(void);
-        unsigned char Blue(void);
+        inline unsigned char Red(void)
+        {
+            if (type == LAND) return 100;
+            else return 0;
+        }
+
+        inline unsigned char Green(void)
+        {
+            return 100 + (int)((food / (MaximumFoodValue() + 1)) * 155);
+        }
+
+        inline unsigned char Blue(void)
+        {
+            if (type == LAND) return 100;
+            else return 150 + (int)((food / (MaximumFoodValue() + 1)) * 105);
+        }
 
         TileType Type(void) const { return type; }
         double Food(void) const { return food; }

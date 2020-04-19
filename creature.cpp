@@ -20,6 +20,9 @@ Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * 
 
     attributes = attr;
 
+    netInputs = new double[n->Inputs().size()];
+    netOutputs = new double[n->Outputs().size()];
+
     net = n;
 }
 
@@ -27,6 +30,8 @@ Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * 
 Creature::~Creature()
 {
     delete net;
+    delete[] netInputs;
+    delete[] netOutputs;
 }
 
 Creature::StepState Creature::Step(unsigned int rate)
@@ -42,28 +47,26 @@ Creature::StepState Creature::Step(unsigned int rate)
 
     StepState state = NO_CHANGE;
 
-    std::vector<double> inputs = std::vector<double>();
-
     // Speed is a direct output of the network, so is already normalised by sigmoid function.
-    inputs.push_back((((speed * rate) * 2) - 1));
+    netInputs[0] = ((speed * rate) * 2) - 1;
 
     // Rotational velocity is in rad/s. A direct output of the network, so already normalised by sigmoid function.
-    inputs.push_back(rotationalSpeed * rate);
+    netInputs[1] = (rotationalSpeed * rate);
 
     // Tile colour. Each value is 0-255. Divide by 255/2 and subtract 1.
     double red = (world->GetTile(x, y)->Red() / 127.5) - 1;
     double green = (world->GetTile(x, y)->Green() / 127.5) - 1;
     double blue = (world->GetTile(x, y)->Blue() / 127.5) - 1;
 
-    inputs.push_back(red);
-    inputs.push_back(green);
-    inputs.push_back(blue);
+    netInputs[2] = red;
+    netInputs[3] = green;
+    netInputs[4] = blue;
 
     // Size factor is between 0 and 1. Double and subtract one.
-    inputs.push_back((sizeFactor * 2) - 1);
+    netInputs[5] = (sizeFactor * 2) - 1;
 
     // Percentage of lifespan.
-    inputs.push_back(((age / attributes.lifespan) * 2) - 1);
+    netInputs[6] = ((age / attributes.lifespan) * 2) - 1;
 
     // Value of tile at sight-point.
     double sightDistance = (GetSize() / 2) + attributes.sightDistance;
@@ -83,9 +86,9 @@ Creature::StepState Creature::Step(unsigned int rate)
     double seenGreen_A = (world->GetTile(sightPointA_X, sightPointA_Y)->Green() / 127.5) - 1;
     double seenBlue_A = (world->GetTile(sightPointA_X, sightPointA_Y)->Blue() / 127.5) - 1;
 
-    inputs.push_back(seenRed_A);
-    inputs.push_back(seenGreen_A);
-    inputs.push_back(seenBlue_A);
+    netInputs[7] = seenRed_A;
+    netInputs[8] = seenGreen_A;
+    netInputs[9] = seenBlue_A;
 
     // Right sight-point.
     double sightPointB_X = x + (sightDistance * cos(heading + 0.52));
@@ -102,13 +105,13 @@ Creature::StepState Creature::Step(unsigned int rate)
     double seenGreen_B = (world->GetTile(sightPointB_X, sightPointB_Y)->Green() / 127.5) - 1;
     double seenBlue_B = (world->GetTile(sightPointB_X, sightPointB_Y)->Blue() / 127.5) - 1;
 
-    inputs.push_back(seenRed_B);
-    inputs.push_back(seenGreen_B);
-    inputs.push_back(seenBlue_B);
+    netInputs[10] = seenRed_B;
+    netInputs[11] = seenGreen_B;
+    netInputs[12] = seenBlue_B;
 
-    std::vector<double> outputs = net->OutputValues(inputs);
+    net->OutputValues(netInputs, netOutputs);
 
-    double feedFactor = (outputs[2] + 1.0) / 10.0;
+    double feedFactor = (netOutputs[2] + 1.0) / 10.0;
 
     // Feeding factor is 0.1. The creature consumes 10% of the food in the tile it's on.
     // Scale down because this is per-step, and the feeding rate is per-second.
@@ -119,8 +122,8 @@ Creature::StepState Creature::Step(unsigned int rate)
 
     // Change speed and heading according to network.
     // These values need to be scaled down.
-    speed = ((outputs[0] + 1) / 2) / rate;
-    rotationalSpeed = outputs[1] / rate;
+    speed = ((netOutputs[0] + 1) / 2) / rate;
+    rotationalSpeed = netOutputs[1] / rate;
 
     //printf("Rotational speed: %.6f\n", rotationalSpeed);
 
@@ -146,7 +149,7 @@ Creature::StepState Creature::Step(unsigned int rate)
     //
     // Note: allowing birth if the birth desire is 0 allows for those creatures for whom the birth neuron
     // is disconnected to still reproduce.
-    if (outputs[3] >= 0 && reproductionDelay == 0) 
+    if (netOutputs[3] >= 0 && reproductionDelay == 0) 
     {
         state = GIVE_BIRTH;
 

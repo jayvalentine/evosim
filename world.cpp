@@ -30,11 +30,6 @@ double World::Tile::GrowthRate(unsigned int rate)
     else return (0.004 / rate);
 }
 
-double World::Tile::MaximumFoodValue(void)
-{
-    return 100000.0;
-}
-
 double World::Tile::ReduceByPercentage(double percentage)
 {
     double value = food * percentage;
@@ -48,23 +43,6 @@ void World::Tile::IncreaseFood(double amount)
 {
     food += amount;
     if (food > MaximumFoodValue()) food = MaximumFoodValue();
-}
-
-unsigned char World::Tile::Red(void)
-{
-    if (type == LAND) return 100;
-    else return 0;
-}
-
-unsigned char World::Tile::Green(void)
-{
-    return 100 + (int)((food / (MaximumFoodValue() + 1)) * 155);
-}
-
-unsigned char World::Tile::Blue(void)
-{
-    if (type == LAND) return 100;
-    else return 150 + (int)((food / (MaximumFoodValue() + 1)) * 105);
 }
 
 World::World(double w, double h, double t)
