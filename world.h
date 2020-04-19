@@ -46,7 +46,16 @@ class World
 
     void Step(unsigned int rate);
 
-    World::Tile * GetTile(double x, double y);
+    inline World::Tile * GetTile(double x, double y)
+    {
+        int xIndex = (int) (x / tileSize);
+        int yIndex = (int) (y / tileSize);
+
+        xIndex = xIndex % tiles.size();
+        yIndex = yIndex % tiles[xIndex].size();
+
+        return tiles[xIndex][yIndex];
+    }
 
     double Width(void) { return width; }
     double Height(void) { return height; }

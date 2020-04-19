@@ -53,7 +53,29 @@ class NeuralNetwork
     void AddSynapse(int start, int end, double weight);
     void AddHiddenNeuron(int synapseIndex);
 
-    double NeuronValue(int neuronIndex);
+    inline double NeuronValue(int neuron)
+    {
+        // Base case. If we've got an input, return the input value.
+        if (neuronTypes[neuron] == INPUT)
+        {
+            return inputValues[neuron];
+        }
+
+        // Find all neurons for which this one is the end, and calculate a weighted sum.
+        double weightedSum = 0.0;
+
+        for (int i = 0; i < synapses.size(); i++)
+        {
+            if (synapses[i]->End() == neuron)
+            {
+                weightedSum += (synapses[i]->Weight() * NeuronValue(synapses[i]->Start()));
+            }
+        }
+
+        // The value of the neuron is the weighted sum passed through a sigmoid function.
+        // Here we use a fast approximation.
+        return weightedSum / (1 + fabs(weightedSum));
+    }
 
     std::vector<int> Inputs(void);
     std::vector<int> Outputs(void);

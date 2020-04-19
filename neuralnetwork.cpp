@@ -94,38 +94,6 @@ void NeuralNetwork::AddHiddenNeuron(int synapseIndex)
     // And we're done!
 }
 
-double NeuralNetwork::NeuronValue(int neuron)
-{
-    // Base case. If we've got an input, return the input value.
-    if (neuronTypes[neuron] == INPUT)
-    {
-        return inputValues[neuron];
-    }
-
-    // First, find all synapses for which the end neuron is this one.
-    std::vector<Synapse *> inputSynapses = std::vector<Synapse *>();
-
-    for (int i = 0; i < synapses.size(); i++)
-    {
-        if (synapses[i]->End() == neuron)
-        {
-            inputSynapses.push_back(synapses[i]);
-        }
-    }
-
-    // Now that we know what our inputs are, we can calculate a weighted sum.
-    double weightedSum = 0.0;
-
-    for (int i = 0; i < inputSynapses.size(); i++)
-    {
-        weightedSum += (inputSynapses[i]->Weight() * NeuronValue(inputSynapses[i]->Start()));
-    }
-
-    // The value of the neuron is the weighted sum passed through a sigmoid function.
-    // Here we use a fast approximation.
-    return weightedSum / (1 + fabs(weightedSum));
-}
-
 NeuralNetwork::NeuronType NeuralNetwork::Type(int neuron)
 {
     if (neuron >= neuronTypes.size()) printf("Invalid neuron: %d for size: %lu\n", neuron, neuronTypes.size());

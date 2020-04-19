@@ -32,6 +32,8 @@ step = 0
 
 file = open('population.log', 'r')
 
+difference = 40
+
 while True:
     line = file.readline()
 
@@ -51,7 +53,7 @@ while True:
 
         for k in groups.keys():
             ref_colour = literal_eval(k)
-            if (abs(ref_colour[0] - colours[0]) < 20) and (abs(ref_colour[1] - colours[1]) < 20) and (abs(ref_colour[2] - colours[2]) < 20):
+            if (abs(ref_colour[0] - colours[0]) < difference) and (abs(ref_colour[1] - colours[1]) < difference) and (abs(ref_colour[2] - colours[2]) < difference):
                 found_key = k
 
         if found_key:

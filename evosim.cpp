@@ -31,7 +31,7 @@
 #define MIN_CREATURES 20
 #define MAX_CREATURES 5000
 
-#define MAX_TIME 40 * 60 * 60
+#define MAX_TIME 10 * 60
 
 // Frames per second of the application.
 #define FPS 30
@@ -250,7 +250,7 @@ int main(int argc, char * argv[])
             sprintf(infoBuf, "Run time: %s, Simulation time: %s, Population: %10lu", runTimeString, simTimeString, sim->CreatureCount());
 
             if (view != NULL) view->RenderSimulationInfo(infoBuf);
-            else if ((sim->Steps() % (10 * 60 * FPS)) == 0) printf("%s\n", infoBuf);
+            else if ((sim->Steps() % (60 * FPS)) == 0) printf("%s\n", infoBuf);
 
             // Work out the time it took to perform this iteration.
             unsigned int elapsedTime = endTime - startTime;
@@ -269,8 +269,8 @@ int main(int argc, char * argv[])
             }
 
             // Log the world's population.
-            // Do this every 5 (simulation) minutes.
-            if ((sim->Steps() % (300 * FPS)) == 0)
+            // Do this every 1 (simulation) minutes.
+            if ((sim->Steps() % (60 * FPS)) == 0)
             {
                 std::ofstream logFile;
                 logFile.open("population.log", std::ios::out | std::ios_base::app);

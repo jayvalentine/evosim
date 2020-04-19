@@ -26,8 +26,8 @@ void World::Tile::Step(unsigned int rate)
 
 double World::Tile::GrowthRate(unsigned int rate)
 {
-    if (type == TileType::LAND) return (0.01 / rate);
-    else return (0.001 / rate);
+    if (type == TileType::LAND) return (0.04 / rate);
+    else return (0.004 / rate);
 }
 
 double World::Tile::MaximumFoodValue(void)
@@ -137,15 +137,4 @@ void World::Step(unsigned int rate)
             tiles[x][y]->Step(rate);
         }
     }
-}
-
-World::Tile * World::GetTile(double x, double y)
-{
-    int xIndex = (int) (x / tileSize);
-    int yIndex = (int) (y / tileSize);
-
-    xIndex = xIndex % tiles.size();
-    yIndex = yIndex % tiles[xIndex].size();
-
-    return tiles[xIndex][yIndex];
 }
