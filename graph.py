@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 
 import os
 
-if (os.path.exists('population.log')):
-    os.remove('population.log')
+#if (os.path.exists('population.log')):
+#    os.remove('population.log')
 
-os.system('./evosim.exe')
+#os.system('./evosim.exe')
 
 # Get the number of lines in the file.
 
@@ -32,7 +32,7 @@ step = 0
 
 file = open('population.log', 'r')
 
-difference = 40
+difference = 60
 
 while True:
     line = file.readline()
@@ -73,37 +73,50 @@ max_steps = step
 first = True
 last_populations = []
 
+plots = {}
+
+num = 300
+
 for k in groups.keys():
     steps = list(groups[k].keys())
-
-    population_color = literal_eval(k)
-
-    line_color = (float(population_color[0])/255, float(population_color[1]/255), float(population_color[2])/255)
 
     populations = []
 
     for s in range(max_steps):
-        if first:
-            if s in groups[k].keys():
-                populations.append(groups[k][s])
-            else:
-                populations.append(0)
+        if s in groups[k].keys():
+            populations.append(groups[k][s])
         else:
-            if s in groups[k].keys():
-                populations.append(last_populations[s] + groups[k][s])
-            else:
-                populations.append(0)
+            populations.append(0)
+    
+    averages = []
 
-    if first:
-        last_populations = populations
-    else:
-        for i in range(len(last_populations)):
-            if populations[i] > 0:
-                last_populations[i] = populations[i]
+    averages.append(populations[0])
 
-    plt.plot(range(max_steps), populations, color=line_color)
+    # Calculate moving average of populations.
+    for i in range(num-1, max_steps):
+        total = 0
+        for j in range(num):
+            total += populations[i-j]
 
-    first = False
+        averages.append(total / float(num))
+
+    plots[k] = averages
+
+cumulative = []
+for i in range(num-2, max_steps):
+    cumulative.append(0)
+
+for k in plots.keys():
+    population_color = literal_eval(k)
+    line_color = (float(population_color[0])/255, float(population_color[1]/255), float(population_color[2])/255)
+
+    this_line = []
+
+    for i in range(len(cumulative)):
+        this_line.append(cumulative[i] + plots[k][i])
+        cumulative[i] += plots[k][i]
+
+    plt.plot([0] + list(range(num-1, max_steps)), this_line, color=line_color)
 
 plt.show()
 
