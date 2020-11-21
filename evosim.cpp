@@ -36,8 +36,6 @@
 // Frames per second of the application.
 #define FPS 30
 
-#define INTERACTIVE 0
-
 // Global random engine.
 std::default_random_engine g_generator;
 
@@ -50,8 +48,21 @@ void PrettyTime(char * buf, unsigned long time)
     sprintf(buf, "%02uh %02um %02us", hours, minutes, seconds);
 }
 
+void parse_args(char * argv[], int argc, bool * interactive)
+{
+    for (int i = 0; i < argc; i++)
+    {
+        std::string s = std::string(argv[i]);
+        if (s == "--interactive" || s == "-i") *interactive = true;
+    }
+}
+
 int main(int argc, char * argv[])
 {
+    bool interactive;
+
+    parse_args(argv, argc, &interactive);
+
     SDL_Window * window = NULL;
     SDL_Window * netWindow = NULL;
 
@@ -69,7 +80,7 @@ int main(int argc, char * argv[])
 
     // We've successfully initialized SDL and TTF.
 
-    if (INTERACTIVE)
+    if (interactive)
     {
         // Now we'll draw the main window.
         window = SDL_CreateWindow("EvoSim", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
@@ -114,7 +125,7 @@ int main(int argc, char * argv[])
 
     View * view = NULL;
 
-    if (INTERACTIVE)
+    if (interactive)
     {
         // Construct a view.
         view = new View(window, netWindow, sim, cameraX, cameraY, cameraScale);
@@ -139,7 +150,7 @@ int main(int argc, char * argv[])
             // We'll use this to cap the framerate.
             unsigned int startTime = SDL_GetTicks();
 
-            while (INTERACTIVE && SDL_PollEvent(&e) != 0)
+            while (interactive && SDL_PollEvent(&e) != 0)
             {
                 if (e.type == SDL_QUIT)
                 {
@@ -260,7 +271,7 @@ int main(int argc, char * argv[])
             // Because we're working in milliseconds, this becomes 1000/60.
             //
             // We skip this if we're not rendering.
-            if (INTERACTIVE && render && (elapsedTime < (1000.0 / FPS)))
+            if (interactive && render && (elapsedTime < (1000.0 / FPS)))
             {
                 unsigned int paddingTime = (1000.0 / FPS) - elapsedTime;
 
@@ -304,7 +315,7 @@ int main(int argc, char * argv[])
     if (view != NULL) delete view;
 
     // Clean up the window and quit.
-    if (INTERACTIVE) SDL_DestroyWindow(window);
+    if (interactive) SDL_DestroyWindow(window);
     SDL_Quit();
     TTF_Quit();
 
