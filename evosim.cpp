@@ -31,7 +31,8 @@
 #define MIN_CREATURES 20
 #define MAX_CREATURES 5000
 
-#define MAX_TIME (40 * 60 * 60)
+// Limit to 40 hrs of runtime.
+#define MAX_TIME 40ul
 
 // Frames per second of the application.
 #define FPS 30
@@ -48,7 +49,7 @@ void PrettyTime(char * buf, unsigned long time)
     sprintf(buf, "%02uh %02um %02us", hours, minutes, seconds);
 }
 
-bool parse_args(char * argv[], int argc, bool * interactive, unsigned long * pretime)
+bool parse_args(char * argv[], int argc, bool * interactive, unsigned long * pretime, unsigned long * time)
 {
     for (int i = 0; i < argc; i++)
     {
@@ -65,6 +66,17 @@ bool parse_args(char * argv[], int argc, bool * interactive, unsigned long * pre
             std::string s_pretime = std::string(argv[i+1]);
             *pretime = std::strtoul(s_pretime.c_str(), NULL, 10);
         }
+        else if (s == "--time" || s == "-t")
+        {
+            if (i == argc)
+            {
+                printf("Expected a value after -t/--time flag\n");
+                return false;
+            }
+
+            std::string s_time = std::string(argv[i+1]);
+            *time = std::strtoul(s_time.c_str(), NULL, 10);
+        }
     }
 
     return true;
@@ -74,12 +86,16 @@ int main(int argc, char * argv[])
 {
     bool interactive = false;
     unsigned long pretime = 0;
+    unsigned long time = MAX_TIME;
 
-    if (!parse_args(argv, argc, &interactive, &pretime))
+    if (!parse_args(argv, argc, &interactive, &pretime, &time))
     {
         printf("Usage error; see previous messages.\n");
         return 1;
     }
+
+    // Limit to MAX_TIME
+    time = std::min(time, MAX_TIME);
 
     SDL_Window * window = NULL;
     SDL_Window * netWindow = NULL;
@@ -160,14 +176,15 @@ int main(int argc, char * argv[])
     bool renderFlag = true;
 
     // Pre-render simulation time in seconds.
-    unsigned long pretime_seconds = pretime * 60 * 60;
+    unsigned long pretimeSeconds = pretime * 60 * 60;
+    unsigned long timeSeconds = time * 60 * 60;
 
     try
     {
         // Main loop. Loop until the user quits.
         while (!quit)
         {
-            bool render = (interactive && renderFlag && (sim->SimulationTime() >= pretime_seconds));
+            bool render = (interactive && renderFlag && (sim->SimulationTime() >= pretimeSeconds));
 
             // Get current time (in milliseconds).
             // We'll use this to cap the framerate.
@@ -321,7 +338,7 @@ int main(int argc, char * argv[])
                 logFile << std::endl;
             }
 
-            if (sim->CreatureCount() > MAX_CREATURES || sim->SimulationTime() > MAX_TIME)
+            if (sim->CreatureCount() > MAX_CREATURES || sim->SimulationTime() > timeSeconds)
             {
                 printf("Maximum population/time exceeded. Exiting...\n");
                 quit = true;
