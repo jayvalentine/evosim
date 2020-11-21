@@ -31,7 +31,7 @@
 #define MIN_CREATURES 20
 #define MAX_CREATURES 5000
 
-#define MAX_TIME 10 * 60
+#define MAX_TIME 40 * 60 * 60
 
 // Frames per second of the application.
 #define FPS 30

@@ -26,8 +26,8 @@ void World::Tile::Step(unsigned int rate)
 
 double World::Tile::GrowthRate(unsigned int rate)
 {
-    if (type == TileType::LAND) return (0.04 / rate);
-    else return (0.004 / rate);
+    if (type == TileType::LAND) return (0.03 / rate);
+    else return (0.003 / rate);
 }
 
 double World::Tile::ReduceByPercentage(double percentage)
