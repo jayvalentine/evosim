@@ -29,7 +29,7 @@
 
 #define START_CREATURES 250
 #define MIN_CREATURES 10
-#define MAX_CREATURES 1000
+#define MAX_CREATURES 5000
 
 // Limit to 40 hrs of runtime.
 #define MAX_TIME ((unsigned long)(40 * 60))
