@@ -10,6 +10,18 @@ Simulation::Simulation(World * w, int minCreatures, unsigned int rate)
     steps = 0;
 }
 
+void Simulation::RunFor(unsigned long seconds)
+{
+    for (unsigned long s = 0; s < seconds; s++)
+    {
+        // Number of steps per second.
+        for (unsigned long r = 0; r < stepRate; r++)
+        {
+            Step();
+        }
+    }
+}
+
 void Simulation::AddInitialCreature(double initialX, double initialY)
 {
     // Create a new neural network for the creature.

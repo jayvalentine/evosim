@@ -31,7 +31,7 @@
 #define MIN_CREATURES 20
 #define MAX_CREATURES 5000
 
-#define MAX_TIME 40 * 60 * 60
+#define MAX_TIME (40 * 60 * 60)
 
 // Frames per second of the application.
 #define FPS 30
@@ -48,20 +48,38 @@ void PrettyTime(char * buf, unsigned long time)
     sprintf(buf, "%02uh %02um %02us", hours, minutes, seconds);
 }
 
-void parse_args(char * argv[], int argc, bool * interactive)
+bool parse_args(char * argv[], int argc, bool * interactive, unsigned long * pretime)
 {
     for (int i = 0; i < argc; i++)
     {
         std::string s = std::string(argv[i]);
         if (s == "--interactive" || s == "-i") *interactive = true;
+        else if (s == "--pretime" || s == "-p")
+        {
+            if (i == argc)
+            {
+                printf("Expected a value after -p/--pretime flag\n");
+                return false;
+            }
+
+            std::string s_pretime = std::string(argv[i+1]);
+            *pretime = std::strtoul(s_pretime.c_str(), NULL, 10);
+        }
     }
+
+    return true;
 }
 
 int main(int argc, char * argv[])
 {
-    bool interactive;
+    bool interactive = false;
+    unsigned long pretime = 0;
 
-    parse_args(argv, argc, &interactive);
+    if (!parse_args(argv, argc, &interactive, &pretime))
+    {
+        printf("Usage error; see previous messages.\n");
+        return 1;
+    }
 
     SDL_Window * window = NULL;
     SDL_Window * netWindow = NULL;
@@ -139,13 +157,18 @@ int main(int argc, char * argv[])
     unsigned int simulationBegin = SDL_GetTicks();
 
     // Whether or not we are rendering the view.
-    bool render = true;
+    bool renderFlag = true;
+
+    // Pre-render simulation time in seconds.
+    unsigned long pretime_seconds = pretime * 60 * 60;
 
     try
     {
         // Main loop. Loop until the user quits.
         while (!quit)
         {
+            bool render = (interactive && renderFlag && (sim->SimulationTime() >= pretime_seconds));
+
             // Get current time (in milliseconds).
             // We'll use this to cap the framerate.
             unsigned int startTime = SDL_GetTicks();
@@ -206,7 +229,7 @@ int main(int argc, char * argv[])
                             break;
                         case SDLK_r:
                             printf("Toggle rendering\n");
-                            render = !render;
+                            renderFlag = !renderFlag;
                             break;
                         case SDLK_1:
                             printf("Select latest generation creature\n");
@@ -239,7 +262,7 @@ int main(int argc, char * argv[])
             sim->Step();
 
             // Render the view to the user.
-            if (render && (view != NULL))
+            if (render)
             {
                 view->Render(); 
             }
@@ -260,7 +283,7 @@ int main(int argc, char * argv[])
 
             sprintf(infoBuf, "Run time: %s, Simulation time: %s, Population: %10lu", runTimeString, simTimeString, sim->CreatureCount());
 
-            if (view != NULL) view->RenderSimulationInfo(infoBuf);
+            if (render) view->RenderSimulationInfo(infoBuf);
             else if ((sim->Steps() % (60 * FPS)) == 0) printf("%s\n", infoBuf);
 
             // Work out the time it took to perform this iteration.
@@ -271,7 +294,7 @@ int main(int argc, char * argv[])
             // Because we're working in milliseconds, this becomes 1000/60.
             //
             // We skip this if we're not rendering.
-            if (interactive && render && (elapsedTime < (1000.0 / FPS)))
+            if (render && (elapsedTime < (1000.0 / FPS)))
             {
                 unsigned int paddingTime = (1000.0 / FPS) - elapsedTime;
 
@@ -301,7 +324,7 @@ int main(int argc, char * argv[])
             if (sim->CreatureCount() > MAX_CREATURES || sim->SimulationTime() > MAX_TIME)
             {
                 printf("Maximum population/time exceeded. Exiting...\n");
-                quit = true;   
+                quit = true;
             }
         }
     }
