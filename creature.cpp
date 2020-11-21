@@ -34,6 +34,24 @@ Creature::~Creature()
     delete[] netOutputs;
 }
 
+Point Creature::GetPointInLine(double l, double h)
+{
+    double point_x = x + (l * cos(h));
+    double point_y = y + (l * sin(h));
+
+    if (point_x >= world->Width()) point_x -= world->Width();
+    else if (point_x < 0) point_x = world->Width() + point_x;
+
+    if (point_y >= world->Height()) point_y -= world->Height();
+    else if (point_y < 0) point_y = world->Height() + point_y;
+
+    Point p;
+    p.x = point_x;
+    p.y = point_y;
+
+    return p;
+}
+
 Creature::StepState Creature::Step(unsigned int rate)
 {
     if (age > attributes.lifespan)
@@ -71,39 +89,24 @@ Creature::StepState Creature::Step(unsigned int rate)
     // Value of tile at sight-point.
     double sightDistance = (GetSize() / 2) + attributes.sightDistance;
 
-    // Left sight-point.
-    double sightPointA_X = x + (sightDistance * cos(heading - 0.52));
-    double sightPointA_Y = y + (sightDistance * sin(heading - 0.52));
-
-    if (sightPointA_X >= world->Width()) sightPointA_X -= world->Width();
-    else if (sightPointA_X < 0) sightPointA_X = world->Width() + sightPointA_X;
-
-    if (sightPointA_Y >= world->Height()) sightPointA_Y -= world->Height();
-    else if (sightPointA_Y < 0) sightPointA_Y = world->Height() + sightPointA_Y;
+    Point leftPoint = GetPointInLine(sightDistance, heading - 0.52);
 
     // Tile colour. Each value is 0-255. Divide by 255/2 and subtract 1.
-    double seenRed_A = (world->GetTile(sightPointA_X, sightPointA_Y)->Red() / 127.5) - 1;
-    double seenGreen_A = (world->GetTile(sightPointA_X, sightPointA_Y)->Green() / 127.5) - 1;
-    double seenBlue_A = (world->GetTile(sightPointA_X, sightPointA_Y)->Blue() / 127.5) - 1;
+    double seenRed_A = (world->GetTile(leftPoint.x, leftPoint.y)->Red() / 127.5) - 1;
+    double seenGreen_A = (world->GetTile(leftPoint.x, leftPoint.y)->Green() / 127.5) - 1;
+    double seenBlue_A = (world->GetTile(leftPoint.x, leftPoint.y)->Blue() / 127.5) - 1;
 
     netInputs[7] = seenRed_A;
     netInputs[8] = seenGreen_A;
     netInputs[9] = seenBlue_A;
 
     // Right sight-point.
-    double sightPointB_X = x + (sightDistance * cos(heading + 0.52));
-    double sightPointB_Y = y + (sightDistance * sin(heading + 0.52));
-
-    if (sightPointB_X >= world->Width()) sightPointB_X -= world->Width();
-    else if (sightPointB_X < 0) sightPointB_X = world->Width() + sightPointB_X;
-
-    if (sightPointB_Y >= world->Height()) sightPointB_Y -= world->Height();
-    else if (sightPointB_Y < 0) sightPointB_Y = world->Height() + sightPointB_Y;
+    Point rightPoint = GetPointInLine(sightDistance, heading + 0.52);
 
     // Tile colour. Each value is 0-255. Divide by 255/2 and subtract 1.
-    double seenRed_B = (world->GetTile(sightPointB_X, sightPointB_Y)->Red() / 127.5) - 1;
-    double seenGreen_B = (world->GetTile(sightPointB_X, sightPointB_Y)->Green() / 127.5) - 1;
-    double seenBlue_B = (world->GetTile(sightPointB_X, sightPointB_Y)->Blue() / 127.5) - 1;
+    double seenRed_B = (world->GetTile(rightPoint.x, rightPoint.y)->Red() / 127.5) - 1;
+    double seenGreen_B = (world->GetTile(rightPoint.x, rightPoint.y)->Green() / 127.5) - 1;
+    double seenBlue_B = (world->GetTile(rightPoint.x, rightPoint.y)->Blue() / 127.5) - 1;
 
     netInputs[10] = seenRed_B;
     netInputs[11] = seenGreen_B;

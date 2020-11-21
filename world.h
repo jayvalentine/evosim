@@ -5,6 +5,12 @@
 
 #include "random.h"
 
+typedef struct _Point
+{
+    double x;
+    double y;
+} Point;
+
 class World
 {
     public:

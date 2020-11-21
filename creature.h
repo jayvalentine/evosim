@@ -82,6 +82,8 @@ class Creature
 
     private:
 
+    Point GetPointInLine(double l, double h);
+
     int generation;
 
     Attributes attributes;
