@@ -27,12 +27,12 @@
 #define MIN_SIZE 0.1
 #define MAX_SIZE 100.0
 
-#define START_CREATURES 1000
-#define MIN_CREATURES 20
-#define MAX_CREATURES 5000
+#define START_CREATURES 250
+#define MIN_CREATURES 10
+#define MAX_CREATURES 1000
 
 // Limit to 40 hrs of runtime.
-#define MAX_TIME 40ul
+#define MAX_TIME ((unsigned long)(40 * 60))
 
 // Frames per second of the application.
 #define FPS 30
@@ -190,7 +190,7 @@ int main(int argc, char * argv[])
             // We'll use this to cap the framerate.
             unsigned int startTime = SDL_GetTicks();
 
-            while (interactive && SDL_PollEvent(&e) != 0)
+            while (SDL_PollEvent(&e) != 0 && interactive)
             {
                 if (e.type == SDL_QUIT)
                 {
@@ -296,12 +296,18 @@ int main(int argc, char * argv[])
             PrettyTime(runTimeString, totalTime / 1000);
             PrettyTime(simTimeString, sim->SimulationTime());
 
-            char infoBuf[200];
+            const char * fmt = "Run time: %s, Simulation time: %s, Population: %10lu\n";
 
-            sprintf(infoBuf, "Run time: %s, Simulation time: %s, Population: %10lu", runTimeString, simTimeString, sim->CreatureCount());
-
-            if (render) view->RenderSimulationInfo(infoBuf);
-            else if ((sim->Steps() % (60 * FPS)) == 0) printf("%s\n", infoBuf);
+            if (render)
+            {
+                char infoBuf[200];
+                sprintf(infoBuf, fmt, runTimeString, simTimeString, sim->CreatureCount());
+                view->RenderSimulationInfo(infoBuf);
+            }
+            else if ((sim->Steps() % (60 * FPS)) == 0)
+            {
+                printf(fmt, runTimeString, simTimeString, sim->CreatureCount());
+            }
 
             // Work out the time it took to perform this iteration.
             unsigned int elapsedTime = endTime - startTime;
