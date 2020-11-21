@@ -176,8 +176,8 @@ int main(int argc, char * argv[])
     bool renderFlag = true;
 
     // Pre-render simulation time in seconds.
-    unsigned long pretimeSeconds = pretime * 60 * 60;
-    unsigned long timeSeconds = time * 60 * 60;
+    unsigned long pretimeSeconds = pretime * 60;
+    unsigned long timeSeconds = time * 60;
 
     try
     {
