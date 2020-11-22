@@ -11,7 +11,7 @@ Creature::Creature(World * w, Point initialPosition, NeuralNetwork * n, Attribut
 
     x = initialPosition.X();
     y = initialPosition.Y();
-    heading = Random::Double(0, 2);
+    heading = Random::Double(0, 2 * M_PI);
     speed = 0.0;
     rotationalSpeed = 0.0;
     sizeFactor = 0.5;
@@ -87,7 +87,7 @@ Creature::StepState Creature::Step(unsigned int rate)
     // Value of tile at sight-point.
     double sightDistance = (GetSize() / 2) + attributes.sightDistance;
 
-    Point leftPoint = GetPointInLine(sightDistance, heading - 0.52);
+    Point leftPoint = GetPointInLine(sightDistance, heading - attributes.eyeRotation);
 
     // Tile colour. Each value is 0-255. Divide by 255/2 and subtract 1.
     double seenRed_A = (world->GetTile(leftPoint)->Red() / 127.5) - 1;
@@ -99,7 +99,7 @@ Creature::StepState Creature::Step(unsigned int rate)
     netInputs[9] = seenBlue_A;
 
     // Right sight-point.
-    Point rightPoint = GetPointInLine(sightDistance, heading + 0.52);
+    Point rightPoint = GetPointInLine(sightDistance, heading + attributes.eyeRotation);
 
     // Tile colour. Each value is 0-255. Divide by 255/2 and subtract 1.
     double seenRed_B = (world->GetTile(rightPoint)->Red() / 127.5) - 1;

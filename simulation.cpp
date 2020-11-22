@@ -48,6 +48,8 @@ void Simulation::AddInitialCreature(Point initialPosition)
 
     attr.sightDistance = Random::Double(50, 120);
 
+    attr.eyeRotation = Random::Double(0, M_PI / 2);
+
     if (world->GetTile(initialPosition)->Type() == World::TileType::LAND) attr.breathing = Creature::BreathingType::LAND;
     else attr.breathing = Creature::BreathingType::WATER;
 

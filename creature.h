@@ -48,6 +48,9 @@ class Creature
 
         // Breathing capability of this creature.
         BreathingType breathing;
+
+        // How far (in radians) the creature's eyes are from its front.
+        double eyeRotation;
     };
 
     // Constructor.

@@ -678,15 +678,17 @@ void View::DrawCreature(SDL_Renderer * renderer, Creature * creature, double cam
     double sightDistance = (creature->GetSize() / 2) + creature->GetAttributes().sightDistance;
     int sightPixelDistance = sightDistance * cameraScale;
 
-    int endX_A = creaturePixelX + (sightPixelDistance * cos(creature->GetHeading() - 0.52));
-    int endY_A = creaturePixelY + (sightPixelDistance * sin(creature->GetHeading() - 0.52));
+    double eyeRotation = creature->GetAttributes().eyeRotation;
+
+    int endX_A = creaturePixelX + (sightPixelDistance * cos(creature->GetHeading() - eyeRotation));
+    int endY_A = creaturePixelY + (sightPixelDistance * sin(creature->GetHeading() - eyeRotation));
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
     SDL_RenderDrawLine(renderer, creaturePixelX, creaturePixelY, endX_A, endY_A);
 
-    int endX_B = creaturePixelX + (sightPixelDistance * cos(creature->GetHeading() + 0.52));
-    int endY_B = creaturePixelY + (sightPixelDistance * sin(creature->GetHeading() + 0.52));
+    int endX_B = creaturePixelX + (sightPixelDistance * cos(creature->GetHeading() + eyeRotation));
+    int endY_B = creaturePixelY + (sightPixelDistance * sin(creature->GetHeading() + eyeRotation));
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
 
