@@ -22,7 +22,7 @@ void Simulation::RunFor(unsigned long seconds)
     }
 }
 
-void Simulation::AddInitialCreature(double initialX, double initialY)
+void Simulation::AddInitialCreature(Point initialPosition)
 {
     // Create a new neural network for the creature.
     NeuralNetwork * net = new NeuralNetwork(13, 4, 0);
@@ -48,11 +48,11 @@ void Simulation::AddInitialCreature(double initialX, double initialY)
 
     attr.sightDistance = Random::Double(50, 120);
 
-    if (world->GetTile(initialX, initialY)->Type() == World::TileType::LAND) attr.breathing = Creature::BreathingType::LAND;
+    if (world->GetTile(initialPosition)->Type() == World::TileType::LAND) attr.breathing = Creature::BreathingType::LAND;
     else attr.breathing = Creature::BreathingType::WATER;
 
     // Create a new shared_ptr for the creature;
-    Creature * creature = new Creature(world, initialX, initialY, net, attr, 0, stepRate);
+    Creature * creature = new Creature(world, initialPosition, net, attr, 0, stepRate);
 
     AddCreature(creature);
 }
@@ -102,7 +102,7 @@ void Simulation::AddOffspringCreature(Creature * creature)
     }
 
     // Create a new shared_ptr for the creature
-    Creature * offspring = new Creature(world, creature->GetXPosition(), creature->GetYPosition(), net, attr, creature->Generation() + 1, stepRate);
+    Creature * offspring = new Creature(world, creature->GetPosition(), net, attr, creature->Generation() + 1, stepRate);
 
     AddCreature(offspring);
 }
@@ -140,7 +140,7 @@ void Simulation::Step(void)
             double foodToAdd = std::pow(creatures[i]->GetSize(), 3);
             if (foodToAdd < 0) foodToAdd = 0;
             
-            world->GetTile(creatures[i]->GetXPosition(), creatures[i]->GetYPosition())->IncreaseFood(foodToAdd);
+            world->GetTile(creatures[i]->GetPosition())->IncreaseFood(foodToAdd);
 
             deadIndexes.push_back(i);
         }
@@ -163,7 +163,7 @@ void Simulation::Step(void)
 
     for (int i = 0; i < creaturesToAdd; i++)
     {
-        AddInitialCreature(Random::Double(0, world->Width()), Random::Double(0, world->Height()));
+        AddInitialCreature(Point(Random::Double(0, world->Width()), Random::Double(0, world->Height())));
     }
 
     steps++;

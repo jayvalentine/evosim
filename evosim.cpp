@@ -142,7 +142,7 @@ int main(int argc, char * argv[])
         double x = Random::Double(0, WORLD_WIDTH);
         double y = Random::Double(0, WORLD_HEIGHT);
 
-        sim->AddInitialCreature(x, y);
+        sim->AddInitialCreature(Point(x, y));
     }
 
     printf("World initialized\n");

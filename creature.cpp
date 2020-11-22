@@ -1,7 +1,7 @@
 #include "creature.h"
 
 // Constructor.
-Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * n, Attributes attr, int gen, unsigned int rate)
+Creature::Creature(World * w, Point initialPosition, NeuralNetwork * n, Attributes attr, int gen, unsigned int rate)
 {
     generation = gen;
 
@@ -9,8 +9,8 @@ Creature::Creature(World * w, double initialX, double initialY, NeuralNetwork * 
 
     world = w;
 
-    x = initialX;
-    y = initialY;
+    x = initialPosition.X();
+    y = initialPosition.Y();
     heading = Random::Double(0, 2);
     speed = 0.0;
     rotationalSpeed = 0.0;
@@ -45,11 +45,7 @@ Point Creature::GetPointInLine(double l, double h)
     if (point_y >= world->Height()) point_y -= world->Height();
     else if (point_y < 0) point_y = world->Height() + point_y;
 
-    Point p;
-    p.x = point_x;
-    p.y = point_y;
-
-    return p;
+    return Point(point_x, point_y);
 }
 
 Creature::StepState Creature::Step(unsigned int rate)
@@ -71,10 +67,12 @@ Creature::StepState Creature::Step(unsigned int rate)
     // Rotational velocity is in rad/s. A direct output of the network, so already normalised by sigmoid function.
     netInputs[1] = (rotationalSpeed * rate);
 
+    Point currentPosition = Point(x, y);
+
     // Tile colour. Each value is 0-255. Divide by 255/2 and subtract 1.
-    double red = (world->GetTile(x, y)->Red() / 127.5) - 1;
-    double green = (world->GetTile(x, y)->Green() / 127.5) - 1;
-    double blue = (world->GetTile(x, y)->Blue() / 127.5) - 1;
+    double red = (world->GetTile(currentPosition)->Red() / 127.5) - 1;
+    double green = (world->GetTile(currentPosition)->Green() / 127.5) - 1;
+    double blue = (world->GetTile(currentPosition)->Blue() / 127.5) - 1;
 
     netInputs[2] = red;
     netInputs[3] = green;
@@ -92,9 +90,9 @@ Creature::StepState Creature::Step(unsigned int rate)
     Point leftPoint = GetPointInLine(sightDistance, heading - 0.52);
 
     // Tile colour. Each value is 0-255. Divide by 255/2 and subtract 1.
-    double seenRed_A = (world->GetTile(leftPoint.x, leftPoint.y)->Red() / 127.5) - 1;
-    double seenGreen_A = (world->GetTile(leftPoint.x, leftPoint.y)->Green() / 127.5) - 1;
-    double seenBlue_A = (world->GetTile(leftPoint.x, leftPoint.y)->Blue() / 127.5) - 1;
+    double seenRed_A = (world->GetTile(leftPoint)->Red() / 127.5) - 1;
+    double seenGreen_A = (world->GetTile(leftPoint)->Green() / 127.5) - 1;
+    double seenBlue_A = (world->GetTile(leftPoint)->Blue() / 127.5) - 1;
 
     netInputs[7] = seenRed_A;
     netInputs[8] = seenGreen_A;
@@ -104,9 +102,9 @@ Creature::StepState Creature::Step(unsigned int rate)
     Point rightPoint = GetPointInLine(sightDistance, heading + 0.52);
 
     // Tile colour. Each value is 0-255. Divide by 255/2 and subtract 1.
-    double seenRed_B = (world->GetTile(rightPoint.x, rightPoint.y)->Red() / 127.5) - 1;
-    double seenGreen_B = (world->GetTile(rightPoint.x, rightPoint.y)->Green() / 127.5) - 1;
-    double seenBlue_B = (world->GetTile(rightPoint.x, rightPoint.y)->Blue() / 127.5) - 1;
+    double seenRed_B = (world->GetTile(rightPoint)->Red() / 127.5) - 1;
+    double seenGreen_B = (world->GetTile(rightPoint)->Green() / 127.5) - 1;
+    double seenBlue_B = (world->GetTile(rightPoint)->Blue() / 127.5) - 1;
 
     netInputs[10] = seenRed_B;
     netInputs[11] = seenGreen_B;
@@ -118,7 +116,7 @@ Creature::StepState Creature::Step(unsigned int rate)
 
     // Feeding factor is 0.1. The creature consumes 10% of the food in the tile it's on.
     // Scale down because this is per-step, and the feeding rate is per-second.
-    double food = world->GetTile(x, y)->ReduceByPercentage(feedFactor / rate);
+    double food = world->GetTile(currentPosition)->ReduceByPercentage(feedFactor / rate);
 
     // Input energy is a proportion of food. Some is wasted.
     double inputEnergy = (food * 0.8);
@@ -168,8 +166,8 @@ Creature::StepState Creature::Step(unsigned int rate)
     double spentEnergy = (speed * attributes.maxSpeed) + rotationalSpeed + (sizeFactor * attributes.maxSize);
 
     // A creature in an environment in which it cannot breathe dies quickly.
-    if ((attributes.breathing == WATER && world->GetTile(x, y)->Type() == World::TileType::LAND)
-        || (attributes.breathing == LAND && world->GetTile(x, y)->Type() == World::TileType::WATER))
+    if ((attributes.breathing == WATER && world->GetTile(currentPosition)->Type() == World::TileType::LAND)
+        || (attributes.breathing == LAND && world->GetTile(currentPosition)->Type() == World::TileType::WATER))
     {
         sizeFactor -= 0.05;
     }

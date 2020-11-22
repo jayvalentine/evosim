@@ -51,7 +51,7 @@ class Creature
     };
 
     // Constructor.
-    Creature(World * w, double initialX, double initialY, NeuralNetwork * n, Attributes attr, int gen, unsigned int rate);
+    Creature(World * w, Point initialPosition, NeuralNetwork * n, Attributes attr, int gen, unsigned int rate);
 
     // Destructor.
     ~Creature();
@@ -63,8 +63,7 @@ class Creature
 
     // Getters for private properties.
     int Generation(void) { return generation; }
-    double GetXPosition(void) { return x; }
-    double GetYPosition(void) { return y; }
+    Point GetPosition(void) { return Point(x, y); }
     double GetHeading(void) { return heading; }
 
     double GetSize(void) { return sizeFactor * attributes.maxSize; }

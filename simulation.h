@@ -19,7 +19,7 @@ class Simulation
 
     unsigned int SimulationTime(void);
 
-    void AddInitialCreature(double initialX, double initialY);
+    void AddInitialCreature(Point initialPosition);
     void AddOffspringCreature(Creature * creature);
 
     std::shared_ptr<Creature> GetCreature(int index) { return creatures[index]; };

@@ -2,6 +2,12 @@
 
 #include <stdio.h>
 
+Point::Point(double x, double y)
+{
+    _x = x;
+    _y = y;
+}
+
 World::Tile::Tile(World::TileType t, double f)
 {
     type = t;

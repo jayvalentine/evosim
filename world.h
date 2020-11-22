@@ -5,11 +5,20 @@
 
 #include "random.h"
 
-typedef struct _Point
+class Point
 {
-    double x;
-    double y;
-} Point;
+    public:
+
+    Point(double x, double y);
+
+    inline double X(void) { return _x; };
+    inline double Y(void) { return _y; };
+
+    private:
+
+    double _x;
+    double _y;
+};
 
 class World
 {
@@ -69,10 +78,10 @@ class World
 
     void Step(unsigned int rate);
 
-    inline World::Tile * GetTile(double x, double y)
+    inline World::Tile * GetTile(Point p)
     {
-        int xIndex = (int) (x / tileSize);
-        int yIndex = (int) (y / tileSize);
+        int xIndex = (int) (p.X() / tileSize);
+        int yIndex = (int) (p.Y() / tileSize);
 
         xIndex = xIndex % tiles.size();
         yIndex = yIndex % tiles[xIndex].size();

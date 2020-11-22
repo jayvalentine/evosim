@@ -1,6 +1,7 @@
 #include "view.h"
 
 View::View(SDL_Window * window, SDL_Window * netWindow, Simulation * sim, double initialX, double initialY, double initialScale)
+    : cameraPosition(initialX, initialY)
 {
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -9,9 +10,6 @@ View::View(SDL_Window * window, SDL_Window * netWindow, Simulation * sim, double
     netRenderer = SDL_CreateRenderer(netWindow, -1, SDL_RENDERER_ACCELERATED);
 
     simReference = sim;
-
-    cameraX = initialX;
-    cameraY = initialY;
     cameraScale = initialScale;
 
     focusCreature = NULL;
@@ -311,8 +309,7 @@ void View::Render(void)
         }
         else
         {
-            cameraX = focusCreature->GetXPosition();
-            cameraY = focusCreature->GetYPosition();
+            cameraPosition = focusCreature->GetPosition();
 
             // Show the information window.
             SDL_ShowWindow(netWindowReference);
@@ -348,13 +345,13 @@ void View::Render(void)
 
     // Now we can determine the boundaries of the camera in metres, and so
     // work out what we can display.
-    double cameraLeft = cameraX - (cameraWidth / 2);
+    double cameraLeft = cameraPosition.X() - (cameraWidth / 2);
     if (cameraLeft < 0.0) cameraLeft = 0.0;
     else if (cameraLeft > (simReference->GetWorld()->Width() - cameraWidth)) cameraLeft = simReference->GetWorld()->Width() - cameraWidth;
 
     double cameraRight = cameraLeft + cameraWidth;
 
-    double cameraTop = cameraY - (cameraHeight / 2);
+    double cameraTop = cameraPosition.Y() - (cameraHeight / 2);
     if (cameraTop < 0.0) cameraTop = 0.0;
     else if (cameraTop > (simReference->GetWorld()->Height() - cameraHeight)) cameraTop = simReference->GetWorld()->Height() - cameraHeight;
 
@@ -398,7 +395,7 @@ void View::Render(void)
 
             if (tileBottomPixels >= height) tileBottomPixels = height - 1;
 
-            World::Tile * tile = simReference->GetWorld()->GetTile(realX, realY);
+            World::Tile * tile = simReference->GetWorld()->GetTile(Point(realX, realY));
 
             if (tileBottomPixels < viewY) 
             {
@@ -436,14 +433,13 @@ void View::Render(void)
 
         if (!creature) continue;
 
-        double creatureX = creature->GetXPosition();
-        double creatureY = creature->GetYPosition();
+        Point creaturePosition = creature->GetPosition();
+
+        if (creaturePosition.X() < cameraLeft) continue;
+        if (creaturePosition.X() > cameraRight) continue;
         
-        if (creatureX < cameraLeft) continue;
-        if (creatureX > cameraRight) continue;
-        
-        if (creatureY < cameraTop) continue;
-        if (creatureY > cameraBottom) continue;
+        if (creaturePosition.Y() < cameraTop) continue;
+        if (creaturePosition.Y() > cameraBottom) continue;
 
         DrawCreature(renderer, creature.get(), cameraLeft, cameraTop);
     }
@@ -480,42 +476,46 @@ void View::PanLeft(void)
 {
     focusCreature.reset();
 
-    cameraX -= PanSpeed();
-    if (CameraLeft() < 0.0) cameraX += PanSpeed();
+    double newCameraX = cameraPosition.X() - PanSpeed();
+    if (CameraLeft() < 0.0) newCameraX += PanSpeed();
+    cameraPosition = Point(newCameraX, cameraPosition.Y());
 }
 
 void View::PanRight(void)
 {
     focusCreature.reset();
 
-    cameraX += PanSpeed();
-    if (CameraRight() > simReference->GetWorld()->Width()) cameraX -= PanSpeed();
+    double newCameraX = cameraPosition.X() + PanSpeed();
+    if (CameraRight() > simReference->GetWorld()->Width()) newCameraX -= PanSpeed();
+    cameraPosition = Point(newCameraX, cameraPosition.Y());
 }
 
 void View::PanUp(void)
 {
     focusCreature.reset();
 
-    cameraY -= PanSpeed();
-    if (CameraTop() < 0.0) cameraY += PanSpeed();
+    double newCameraY = cameraPosition.Y() - PanSpeed();
+    if (CameraTop() < 0.0) newCameraY += PanSpeed();
+    cameraPosition = Point(cameraPosition.X(), newCameraY);
 }
 
 void View::PanDown(void)
 {
     focusCreature.reset();
     
-    cameraY += PanSpeed();
-    if (CameraBottom() > simReference->GetWorld()->Height()) cameraY -= PanSpeed();
+    double newCameraY = cameraPosition.Y() + PanSpeed();
+    if (CameraBottom() > simReference->GetWorld()->Height()) newCameraY -= PanSpeed();
+    cameraPosition = Point(cameraPosition.X(), newCameraY);
 }
 
 double View::XCoordinate(void)
 {
-    return cameraX;
+    return cameraPosition.X();
 }
 
 double View::YCoordinate(void)
 {
-    return cameraY;
+    return cameraPosition.Y();
 }
 
 double View::CameraLeft(void)
@@ -526,7 +526,7 @@ double View::CameraLeft(void)
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
     double cameraWidth = width / cameraScale;
-    double cameraLeft = cameraX - (cameraWidth / 2);
+    double cameraLeft = cameraPosition.X() - (cameraWidth / 2);
 
     return cameraLeft;
 }
@@ -539,7 +539,7 @@ double View::CameraRight(void)
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
     double cameraWidth = width / cameraScale;
-    double cameraRight = cameraX + (cameraWidth / 2);
+    double cameraRight = cameraPosition.X() + (cameraWidth / 2);
 
     return cameraRight;
 }
@@ -552,7 +552,7 @@ double View::CameraTop(void)
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
     double cameraHeight = height / cameraScale;
-    double cameraTop = cameraY - (cameraHeight / 2);
+    double cameraTop = cameraPosition.Y() - (cameraHeight / 2);
 
     return cameraTop;
 }
@@ -565,7 +565,7 @@ double View::CameraBottom(void)
     SDL_GetRendererOutputSize(renderer, &width, &height);
 
     double cameraHeight = height / cameraScale;
-    double cameraBottom = cameraY + (cameraHeight / 2);
+    double cameraBottom = cameraPosition.Y() + (cameraHeight / 2);
 
     return cameraBottom;
 }
@@ -641,8 +641,8 @@ void View::HandleClick(int x, int y)
         if (!creature) continue;
 
         // Calculate distance from this creature to the clicked point.
-        double xDist = fabs(realX - creature->GetXPosition());
-        double yDist = fabs(realY - creature->GetYPosition());
+        double xDist = fabs(realX - creature->GetPosition().X());
+        double yDist = fabs(realY - creature->GetPosition().Y());
 
         // A bit of year 7 maths...
         double distance = sqrt((xDist * xDist) + (yDist * yDist));
@@ -660,16 +660,15 @@ void View::HandleClick(int x, int y)
 
 void View::DrawCreature(SDL_Renderer * renderer, Creature * creature, double cameraLeft, double cameraTop)
 {
-    double creatureX = creature->GetXPosition();
-    double creatureY = creature->GetYPosition();
+    Point creaturePosition = creature->GetPosition();
 
     double creatureSize = creature->GetSize();
 
     // If we get here then the creature is within the bounds of the camera,
     // so lets calculate its pixel position.
 
-    double creatureWithinX = creatureX - cameraLeft;
-    double creatureWithinY = creatureY - cameraTop;
+    double creatureWithinX = creaturePosition.X() - cameraLeft;
+    double creatureWithinY = creaturePosition.Y() - cameraTop;
 
     // Scale both to get the pixel position.
     int creaturePixelX = (int) (creatureWithinX * cameraScale);

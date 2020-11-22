@@ -9,6 +9,7 @@
 
 #include "simulation.h"
 #include "creature.h"
+#include "world.h"
 
 // Camera scrolling constants.
 #define CAMERA_ZOOM_FACTOR 2.0
@@ -78,8 +79,7 @@ class View
     Simulation * simReference;
 
     // Camera position and scale.
-    double cameraX;
-    double cameraY;
+    Point cameraPosition;
     double cameraScale;
 
     // Creature we're focusing on.
