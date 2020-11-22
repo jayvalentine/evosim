@@ -97,6 +97,10 @@ void Simulation::AddOffspringCreature(Creature * creature)
     if (attr.sightDistance < 0) attr.sightDistance = 0;
     else if (attr.sightDistance > 200) attr.sightDistance = 200;
 
+    attr.eyeRotation += Random::Double(-0.10, 0.10);
+    if (attr.eyeRotation < 0.05) attr.eyeRotation = 0.05;
+    else if (attr.eyeRotation > (M_PI / 2)) attr.eyeRotation = M_PI / 2;
+
     // Small chance to become amphibious.
     if (Random::Double(0, 1) < 0.00001)
     {
